@@ -16,10 +16,6 @@ function Candle({ data, extend1, extend2, extend3 }) {
       element.remove();
     }
   };
-  console.log(data.data);
-  console.log(extend1);
-  console.log(extend2);
-  console.log(extend3);
   const n = data.data.length;
   const stackData = [];
   for (var i = 0; i < n; i++) {
@@ -34,32 +30,12 @@ function Candle({ data, extend1, extend2, extend3 }) {
     var v1 = extend1[i] ? extend1[i] : extend1[i] + 0.05;
     var v2 = extend2[i] ? extend2[i] : extend2[i] + 0.05;
     var v3 = extend3[i] ? extend3[i] : extend3[i] + 0.05;
-    res["price1"] = parseFloat(
-      (
-        (Math.abs(data.data[i][1] - data.data[i][2]) * v1) /
-        (v1 + v2 + v3)
-      ).toFixed(2)
-    );
-    res["price2"] = parseFloat(
-      (
-        (Math.abs(data.data[i][1] - data.data[i][2]) * v2) /
-        (v1 + v2 + v3)
-      ).toFixed(2)
-    );
-    res["price3"] = parseFloat(
-      (
-        (Math.abs(data.data[i][1] - data.data[i][2]) * v3) /
-        (v1 + v2 + v3)
-      ).toFixed(2)
-    );
+    res["percentage1"] = parseFloat(v1 / (v1 + v2 + v3).toFixed(2));
+    res["percentage2"] = parseFloat(v2 / (v1 + v2 + v3).toFixed(2));
+    res["percentage3"] = parseFloat(v3 / (v1 + v2 + v3).toFixed(2));
     stackData.push(res);
   }
   console.log(stackData);
-
-  const colorScale = d3
-    .scaleOrdinal()
-    .domain(["price1", "price2", "price3"]) // 为每个类别指定一个名称
-    .range(["#98abc5", "#8a89a6", "#4682B4"]); // 为每个类别指定一个颜色
 
   useEffect(() => {
     checkElementExist(getSvg().selectAll("svg"));
@@ -205,7 +181,7 @@ function Candle({ data, extend1, extend2, extend3 }) {
         return yScale(v["min"]);
       })
       .attr("stroke", handleStrokeColor)
-      .attr("stroke-width", 0.2);
+      .attr("stroke-width", 0.3);
 
     candlestick
       .selectAll("candle-bar1")
@@ -215,7 +191,9 @@ function Candle({ data, extend1, extend2, extend3 }) {
       .attr("class", "candle-bar1")
       .attr("width", candlestickWidth)
       .attr("height", (v) => {
-        return Math.abs(yScale(v["open"]) - yScale(v["close"])) / 2;
+        return (
+          Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage3"]
+        );
       })
       .attr("x", (v, i) => {
         return xScale(i);
@@ -226,7 +204,8 @@ function Candle({ data, extend1, extend2, extend3 }) {
       .attr("rx", 1)
       .attr("stroke", handleStrokeColor)
       .attr("stroke-width", 0.3)
-      .attr("fill", "white");
+      .attr("fill", "rgb(20,68,106)")
+      .attr("fill-opacity", (v)=>String(v["extend3"]));
 
     candlestick
       .selectAll("candle-bar2")
@@ -236,20 +215,50 @@ function Candle({ data, extend1, extend2, extend3 }) {
       .attr("class", "candle-bar2")
       .attr("width", candlestickWidth)
       .attr("height", (v) => {
-        return Math.abs(yScale(v["open"]) - yScale(v["close"])) / 2;
+        return (
+          Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage2"]
+        );
       })
       .attr("x", (v, i) => {
         return xScale(i);
       })
       .attr("y", (v, i) => {
-        return (
-          yScale(d3.max([v["open"], v["close"]]) - Math.abs(v["open"] - v["close"]) / 2)
+        return yScale(
+          d3.max([v["open"], v["close"]]) -
+            Math.abs(v["open"] - v["close"]) * v["percentage3"]
         );
       })
       .attr("rx", 1)
       .attr("stroke", handleStrokeColor)
       .attr("stroke-width", 0.3)
-      .attr("fill", "black");
+      .attr("fill", "rgb(222,125,44)")
+      .attr("fill-opacity", (v)=>String(v["extend2"]));
+
+    candlestick
+      .selectAll("candle-bar3")
+      .data(stackData)
+      .enter()
+      .append("rect")
+      .attr("class", "candle-bar3")
+      .attr("width", candlestickWidth)
+      .attr("height", (v) => {
+        return (
+          Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage1"]
+        );
+      })
+      .attr("x", (v, i) => {
+        return xScale(i);
+      })
+      .attr("y", (v, i) => {
+        return yScale(
+          d3.max([v["open"], v["close"]]) - Math.abs(v["open"] - v["close"]) * (v["percentage3"] + v["percentage2"])
+        );
+      })
+      .attr("rx", 1)
+      .attr("stroke", handleStrokeColor)
+      .attr("stroke-width", 0.3)
+      .attr("fill", "rgb(179,168,150)")
+      .attr("fill-opacity", (v)=>String(v["extend1"]));
 
     var context = svg
       .append("g")
@@ -298,7 +307,7 @@ function Candle({ data, extend1, extend2, extend3 }) {
         .selectAll(".candle-bar1")
         .attr("height", (v, i) => {
           if (xScale(i) >= 0 && xScale(i) <= xScale2(data.data.length))
-            return Math.abs(yScale(v["open"]) - yScale(v["close"]))/2;
+            return Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage3"];
         })
         .attr("x", (v, i) => {
           return xScale(i);
@@ -311,13 +320,32 @@ function Candle({ data, extend1, extend2, extend3 }) {
         .selectAll(".candle-bar2")
         .attr("height", (v, i) => {
           if (xScale(i) >= 0 && xScale(i) <= xScale2(data.data.length))
-            return Math.abs(yScale(v["open"]) - yScale(v["close"]))/2;
+            return Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage2"];
         })
         .attr("x", (v, i) => {
           return xScale(i);
         })
         .attr("y", (v, i) => {
-          return yScale(d3.max([v["open"], v["close"]]) - Math.abs(v["open"] - v["close"]) / 2);
+          return yScale(
+            d3.max([v["open"], v["close"]]) -
+              Math.abs(v["open"] - v["close"]) * v["percentage3"]
+          );
+        })
+        .attr("width", getCandlestickWidth(end - start));
+      focus
+        .selectAll(".candle-bar3")
+        .attr("height", (v, i) => {
+          if (xScale(i) >= 0 && xScale(i) <= xScale2(data.data.length))
+            return Math.abs(yScale(v["open"]) - yScale(v["close"])) * v["percentage1"];
+        })
+        .attr("x", (v, i) => {
+          return xScale(i);
+        })
+        .attr("y", (v, i) => {
+          return yScale(
+            d3.max([v["open"], v["close"]]) -
+              Math.abs(v["open"] - v["close"]) * (v["percentage3"] + v["percentage2"])
+          );
         })
         .attr("width", getCandlestickWidth(end - start));
       focus
