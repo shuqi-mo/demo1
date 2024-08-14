@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import _ from "lodash";
 import * as d3 from "d3";
 
-const width = 1000;
+const width = 800;
 const height = 500;
 const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 const margin2 = { top: 430, right: 30, bottom: 30, left: 80 };
@@ -181,7 +181,7 @@ function Candle({ data, extend1, extend2, extend3 }) {
         return yScale(v["min"]);
       })
       .attr("stroke", handleStrokeColor)
-      .attr("stroke-width", 0.3);
+      .attr("stroke-width", 1);
 
     candlestick
       .selectAll("candle-bar1")
@@ -202,10 +202,10 @@ function Candle({ data, extend1, extend2, extend3 }) {
         return yScale(d3.max([v["open"], v["close"]]));
       })
       .attr("rx", 1)
-      .attr("stroke", handleStrokeColor)
-      .attr("stroke-width", 0.3)
+      // .attr("stroke", handleStrokeColor)
+      // .attr("stroke-width", 0.3)
       .attr("fill", "rgb(20,68,106)")
-      .attr("fill-opacity", (v)=>String(v["extend3"]));
+      .attr("fill-opacity", (v)=>String(v["extend3"] ? v["extend3"] : v["extend3"] + 0.2));
 
     candlestick
       .selectAll("candle-bar2")
@@ -229,10 +229,10 @@ function Candle({ data, extend1, extend2, extend3 }) {
         );
       })
       .attr("rx", 1)
-      .attr("stroke", handleStrokeColor)
-      .attr("stroke-width", 0.3)
+      // .attr("stroke", handleStrokeColor)
+      // .attr("stroke-width", 0.3)
       .attr("fill", "rgb(222,125,44)")
-      .attr("fill-opacity", (v)=>String(v["extend2"]));
+      .attr("fill-opacity", (v)=>String(v["extend2"] ? v["extend2"] : v["extend2"] + 0.2));
 
     candlestick
       .selectAll("candle-bar3")
@@ -255,10 +255,10 @@ function Candle({ data, extend1, extend2, extend3 }) {
         );
       })
       .attr("rx", 1)
-      .attr("stroke", handleStrokeColor)
-      .attr("stroke-width", 0.3)
+      // .attr("stroke", handleStrokeColor)
+      // .attr("stroke-width", 0.3)
       .attr("fill", "rgb(179,168,150)")
-      .attr("fill-opacity", (v)=>String(v["extend1"]));
+      .attr("fill-opacity", (v)=>String(v["extend1"] ? v["extend1"] : v["extend1"] + 0.2));
 
     var context = svg
       .append("g")

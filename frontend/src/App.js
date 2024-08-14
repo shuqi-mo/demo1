@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import axios from "axios";
-import Candle from "./Candle";
+import Candle from "./Views/Candle";
+import MonacoEditor from "react-monaco-editor";
+import "./App.scss";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -45,11 +47,30 @@ function App() {
   }, []);
 
   return (
-    data && extendSingle && extendDouble && extendTriple && (
-      <div>
-        <Candle data={data} extend1={extendSingle} extend2={extendDouble} extend3={extendTriple}/>
+    <div>
+      {data && extendSingle && extendDouble && extendTriple && (
+        <div className="candle">
+          <Candle
+            data={data}
+            extend1={extendSingle}
+            extend2={extendDouble}
+            extend3={extendTriple}
+          />
+        </div>
+      )}
+      <div className="editor">
+        <MonacoEditor
+          width="600"
+          height="100"
+          language="javascript"
+          // theme="vs-dark"
+          value={"CROSS(MA(CLOSE,5),MA(CLOSE,30))"}
+          // options={options}
+          // onChange={this.onChange}
+          // editorDidMount={this.editorDidMount}
+        />
       </div>
-    )
+    </div>
   );
 }
 
