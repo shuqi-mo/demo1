@@ -51,3 +51,13 @@ def TBR(price, up, down):
             dis = max(abs(price[i]-up[i]),abs(price[i]-down[i]))
             trade[i] = round(dis/(up[i]-down[i]),2)
     return trade
+
+def cross(short, long):
+    n = len(short)
+    trade = np.zeros(n)
+    for i in range(n-1):
+        if long[i] == 0:
+            continue
+        if (short[i]-long[i])*(short[i+1]-long[i+1]) < 0:
+            trade[i+1] = 1
+    return trade

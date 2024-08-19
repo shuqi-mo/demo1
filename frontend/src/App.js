@@ -11,6 +11,8 @@ function App() {
   const [extendSingle, setextendSingle] = useState(null);
   const [extendDouble, setextendDouble] = useState(null);
   const [extendTriple, setextendTriple] = useState(null);
+  const [code, setCode] = useState("cross(MA(close,5),MA(close,30))");
+
   useEffect(() => {
     axios
       .get(`${API_URL}/get_stock_data`)
@@ -44,7 +46,20 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+    axios
+      .post(`${API_URL}/receive_code`, { code })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [code]);
+
+  function codeOnChange(newValue, e) {
+    // console.log(newValue);
+    setCode(newValue);
+  }
 
   return (
     <div>
@@ -64,9 +79,9 @@ function App() {
           height="100"
           language="javascript"
           // theme="vs-dark"
-          value={"CROSS(MA(CLOSE,5),MA(CLOSE,30))"}
+          value={code}
           // options={options}
-          // onChange={this.onChange}
+          onChange={codeOnChange}
           // editorDidMount={this.editorDidMount}
         />
       </div>

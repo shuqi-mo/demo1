@@ -1,9 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
 from indicator import *
 from strategy import *
+from parser import *
 
 app = Flask(__name__)
 CORS(app)
@@ -40,6 +41,12 @@ def get_triple():
     up, down = bolling(price, 20)
     res = TBR(price, up, down)
     return jsonify(res.tolist())
+
+@app.route('/receive_code', methods=['POST'])
+def receive_code():
+    data = request.get_json()
+    print(parseCode(data))
+    return data
 
 if __name__ == '__main__':
     app.run()
