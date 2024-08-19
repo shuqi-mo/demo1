@@ -58,6 +58,6 @@ def cross(short, long):
     for i in range(n-1):
         if long[i] == 0:
             continue
-        if (short[i]-long[i])*(short[i+1]-long[i+1]) < 0:
+        if short[i] < long[i] and short[i+1] > long[i+1]:
             trade[i+1] = 1
     return trade

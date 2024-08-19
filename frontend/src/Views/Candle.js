@@ -8,7 +8,7 @@ const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 const margin2 = { top: 430, right: 30, bottom: 30, left: 80 };
 const height2 = height - margin2.bottom - margin2.top;
 
-function Candle({ data, extend1, extend2, extend3 }) {
+function Candle({ data, extend1, extend2, extend3, trade }) {
   const d3Node = useRef(null);
   const getSvg = () => d3.select(d3Node.current);
   const checkElementExist = (element) => {
@@ -16,6 +16,7 @@ function Candle({ data, extend1, extend2, extend3 }) {
       element.remove();
     }
   };
+  // console.log(trade)
   const n = data.data.length;
   const stackData = [];
   for (var i = 0; i < n; i++) {
@@ -35,7 +36,7 @@ function Candle({ data, extend1, extend2, extend3 }) {
     res["percentage3"] = parseFloat(v3 / (v1 + v2 + v3).toFixed(2));
     stackData.push(res);
   }
-  console.log(stackData);
+  // console.log(stackData);
 
   useEffect(() => {
     checkElementExist(getSvg().selectAll("svg"));

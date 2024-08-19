@@ -11,7 +11,8 @@ function App() {
   const [extendSingle, setextendSingle] = useState(null);
   const [extendDouble, setextendDouble] = useState(null);
   const [extendTriple, setextendTriple] = useState(null);
-  const [code, setCode] = useState("cross(MA(close,5),MA(close,30))");
+  const [code, setCode] = useState("buy:cross(MA(close,15),MA(close,30))\r\nsell:cross(MA(close,30),MA(close,15))")
+  const [trade, setTrade] = useState(null);
 
   useEffect(() => {
     axios
@@ -49,7 +50,8 @@ function App() {
     axios
       .post(`${API_URL}/receive_code`, { code })
       .then((response) => {
-        console.log(response.data);
+        setTrade(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -70,6 +72,7 @@ function App() {
             extend1={extendSingle}
             extend2={extendDouble}
             extend3={extendTriple}
+            trade={trade}
           />
         </div>
       )}

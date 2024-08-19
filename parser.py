@@ -1,9 +1,11 @@
-from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore
+from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore, OneOrMore
 
 def parseCode(text):
     # 定义数字和标识符
     number = Word(nums)
     identifier = Word(alphas, alphanums + "_")
+    action = Word(alphas)
+    colon = Suppress(":")
 
     # 使用 Forward 声明一个前瞻性解析表达式
     expr = Forward()
@@ -17,5 +19,6 @@ def parseCode(text):
         Suppress(")")
     )
     expr <<= func_call | number | identifier
-    result = expr.parseString(text['code'])
+    complex_expr = OneOrMore(Group(action + colon + expr))
+    result = complex_expr.parseString(text['code'])
     return(result)

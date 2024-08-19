@@ -5,6 +5,7 @@ import numpy as np
 from indicator import *
 from strategy import *
 from parser import *
+from executer import *
 
 app = Flask(__name__)
 CORS(app)
@@ -45,8 +46,14 @@ def get_triple():
 @app.route('/receive_code', methods=['POST'])
 def receive_code():
     data = request.get_json()
-    print(parseCode(data))
-    return data
+    # print(data)
+    parseResult = parseCode(data)
+    # print(parseResult)
+    buy = execute(parseResult[0][1], data_df)
+    sell = execute(parseResult[1][1], data_df)
+    result = buy - sell
+    print(result)
+    return jsonify(result.tolist())
 
 if __name__ == '__main__':
     app.run()
