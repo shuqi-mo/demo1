@@ -51,6 +51,7 @@ def receive_code():
     # print(parseResult)
     buy = execute(parseResult[0][1], data_df)
     sell = execute(parseResult[1][1], data_df)
+    # 数组中1表示买入，-1表示卖出
     result = buy - sell
     print(result)
     return jsonify(result.tolist())

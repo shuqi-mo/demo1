@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div>
-      {data && extendSingle && extendDouble && extendTriple && (
+      {data && extendSingle && extendDouble && extendTriple && trade && (
         <div className="candle">
           <Candle
             data={data}
