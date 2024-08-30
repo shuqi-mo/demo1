@@ -4,6 +4,7 @@ import axios from "axios";
 import Candle from "./Views/Candle";
 import MonacoEditor from "react-monaco-editor";
 import "./App.scss";
+import Exampler from "./Views/Exampler";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -11,8 +12,11 @@ function App() {
   const [extendSingle, setextendSingle] = useState(null);
   const [extendDouble, setextendDouble] = useState(null);
   const [extendTriple, setextendTriple] = useState(null);
-  const [code, setCode] = useState("buy:cross(MA(close,15),MA(close,30))\r\nsell:cross(MA(close,30),MA(close,15))")
+  const [code, setCode] = useState(
+    "buy:cross(MA(close,12),MA(close,26))\r\nsell:cross(MA(close,26),MA(close,12))"
+  );
   const [trade, setTrade] = useState(null);
+  const [examplerData, setExamplerData] = useState(null);
 
   useEffect(() => {
     axios
@@ -56,6 +60,16 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
+    axios
+      .post(`${API_URL}/cal_exampler_data`, { code })
+      .then((response) => {
+        setExamplerData(response.data);
+        // console.log(response.data);
+
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }, [code]);
 
   function codeOnChange(newValue, e) {
@@ -88,6 +102,7 @@ function App() {
           // editorDidMount={this.editorDidMount}
         />
       </div>
+      {examplerData && <Exampler data={examplerData}/>}
     </div>
   );
 }

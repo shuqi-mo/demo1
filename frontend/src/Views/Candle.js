@@ -278,13 +278,14 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
       .attr("class", "deal")
       .attr("width", candlestickWidth)
       .attr("height", (v) => {
-        return Math.abs(20 * v["trade"]);
+        // return yScale(0.5) * Math.abs(v["trade"]);
+        return 20 * Math.abs(v["trade"]);
       })
       .attr("x", (v, i) => {
         return xScale(i);
       })
       .attr("y", (v, i) => {
-        return yScale(d3.max([v["open"], v["close"]]) + 1);
+        return yScale(v["max"] + 1);
       })
       .attr("rx", 1)
       .attr("fill", (v, i) => {
@@ -302,11 +303,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
       .attr("points", (v, i) => {
         const x1 = (xScale(i) - 2) * Math.abs(v["trade"]);
         const x2 = (xScale(i) + candlestickWidth + 2) * Math.abs(v["trade"]);
-        const y1 =
-          (yScale(d3.max([v["open"], v["close"]]) + 1) + 20) *
-          Math.abs(v["trade"]);
-        const y2 =
-          yScale(d3.max([v["open"], v["close"]]) + 0.5) * Math.abs(v["trade"]);
+        const y1 = (yScale(v["max"] + 1) + 20) * Math.abs(v["trade"]);
+        const y2 = (yScale(v["max"] + 0.5) + 20) * Math.abs(v["trade"]);
         return (
           String(x1) +
           "," +
@@ -427,11 +425,14 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         .attr("width", getCandlestickWidth(end - start));
       focus
         .selectAll(".deal")
+        // .attr("height", (v) => {
+        //   return yScale(0.5) * Math.abs(v["trade"]);
+        // })
         .attr("x", (v, i) => {
           return xScale(i);
         })
         .attr("y", (v, i) => {
-          return yScale(d3.max([v["open"], v["close"]]) + 1);
+          return yScale(v["max"] + 1);
         })
         .attr("width", getCandlestickWidth(end - start));
       focus.selectAll(".deal-triangle").attr("points", (v, i) => {
@@ -439,11 +440,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         const x2 =
           (xScale(i) + getCandlestickWidth(end - start) + 2) *
           Math.abs(v["trade"]);
-        const y1 =
-          (yScale(d3.max([v["open"], v["close"]]) + 1) + 20) *
-          Math.abs(v["trade"]);
-        const y2 =
-          yScale(d3.max([v["open"], v["close"]]) + 0.5) * Math.abs(v["trade"]);
+        const y1 = (yScale(v["max"] + 1) + 20) * Math.abs(v["trade"]);
+        const y2 = (yScale(v["max"] + 0.5) + 20) * Math.abs(v["trade"]);
         return (
           String(x1) +
           "," +
