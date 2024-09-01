@@ -10,20 +10,6 @@ def minMaxNormalizeForMultiSeq(li):
             li[i][j] = round((li[i][j] - minNum) / (maxNum - minNum) * 2 - 1,2)
     return li
 
-def compare(e, li):
-    n = len(e)
-    for i in li:
-        if len(i) != n:
-            continue
-        else:
-            for j in range(n):
-                if e[j] != i[j]:
-                    break
-                else:
-                    if j == n - 1:
-                        return 0
-    return 1
-
 def execute(parse, stock):
     n = len(parse)
     if n == 3:
@@ -41,21 +27,27 @@ def execute(parse, stock):
 
 def execute_exampler(parse_buy, parse_sell,  stock, tradePoint):
     param = []
+    param_name = []
+    parse_buy = parse_buy.asList()
+    parse_sell = parse_sell.asList()
     if len(parse_buy) == 3:
         funname_buy = parse_buy[0]
         if len(parse_buy[1]) == 3:
             param.append(execute(parse_buy[1], stock))
+            param_name.append(parse_buy[1])
         if len(parse_buy[2]) == 3:
             param.append(execute(parse_buy[2], stock))
+            param_name.append(parse_buy[2])
     if len(parse_sell) == 3:
         funname_sell = parse_sell[0]
-        if compare(parse_sell[1], parse_buy):
+        if parse_sell[1] not in parse_buy:
             if len(parse_sell[1]) == 3:
                 param.append(execute(parse_sell[1], stock))
-                
-        if compare(parse_sell[2], parse_buy):
+                param_name.append(parse_sell[1])
+        if parse_sell[2] not in parse_buy:
             if len(parse_sell[2]) == 3:
                 param.append(execute(parse_sell[2], stock))
+                param_name.append(parse_sell[2])
     tradeSeq = []
     for i in range(len(param)):
         n = len(param[i])
@@ -79,4 +71,5 @@ def execute_exampler(parse_buy, parse_sell,  stock, tradePoint):
     for i in range(len(tradeSeq)):
         output.append(tradeSeq[i][len(tradeSeq[0])-1])
     output = minMaxNormalizeForMultiSeq(output)
-    return output
+    # print(param_name)
+    return [output,param_name]
