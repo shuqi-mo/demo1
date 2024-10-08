@@ -125,7 +125,7 @@ function Exampler({ data }) {
       .attr("height", height)
       .attr("fill", "none")
       .attr("stroke", "black"); // 外框颜色设置为黑色
-  }, []);
+  }, [data]);
 
   return (
     <div>

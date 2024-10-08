@@ -32,8 +32,8 @@ def update_single_stock_data():
     res = {}
     res["name"] = data["item"]
     stock = []
-    data_df_update = pd.read_csv(file_path + data["item"] + ".csv")
-    for index, rows in data_df_update.iterrows():
+    data_df = pd.read_csv(file_path + data["item"] + ".csv")
+    for index, rows in data_df.iterrows():
         stock.append([rows["trade_date"],rows["open"],rows["close"],rows["high"],rows["low"],rows["vol"]])
     res["data"] = stock
     return jsonify(res)
@@ -62,7 +62,9 @@ def get_triple():
 @app.route('/receive_code', methods=['POST'])
 def receive_code():
     data = request.get_json()
+    # print(data["code"])
     parseResult = parseCode(data)
+    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
     buy = execute(parseResult[0][1], data_df)
     sell = execute(parseResult[1][1], data_df)
     # 数组中1表示买入，-1表示卖出
@@ -73,6 +75,7 @@ def receive_code():
 def cal_exampler_data():
     data = request.get_json()
     parseResult = parseCode(data)
+    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
     buy = execute(parseResult[0][1], data_df)
     sell = execute(parseResult[1][1], data_df)
     # 数组中1表示买入，-1表示卖出

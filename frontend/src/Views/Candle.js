@@ -37,7 +37,7 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
     res["trade"] = trade[i];
     stackData.push(res);
   }
-  console.log(stackData);
+  // console.log(stackData);
 
   useEffect(() => {
     checkElementExist(getSvg().selectAll("svg"));

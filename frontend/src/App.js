@@ -18,11 +18,22 @@ function App() {
   );
   const [trade, setTrade] = useState(null);
   const [examplerData, setExamplerData] = useState(null);
+  const [selectStock, setSelectStock] = useState("600893.SH");
 
   const updateValue = (newValue) => {
     setData(newValue);
-    console.log(newValue);
+    // console.log(newValue);
   };
+
+  const updateStock = (newName) => {
+    setSelectStock(newName);
+    // console.log(newName);
+  };
+
+  function codeOnChange(newValue, e) {
+    // console.log(newValue);
+    setCode(newValue);
+  }
 
   useEffect(() => {
     axios
@@ -57,8 +68,11 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
+  }, []);
+
+  useEffect(() => {
     axios
-      .post(`${API_URL}/receive_code`, { code })
+      .post(`${API_URL}/receive_code`, { code, selectStock })
       .then((response) => {
         setTrade(response.data);
         // console.log(response.data);
@@ -67,7 +81,7 @@ function App() {
         console.error("Error:", error);
       });
     axios
-      .post(`${API_URL}/cal_exampler_data`, { code })
+      .post(`${API_URL}/cal_exampler_data`, { code, selectStock })
       .then((response) => {
         setExamplerData(response.data);
         // console.log(response.data);
@@ -75,17 +89,12 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [code]);
-
-  function codeOnChange(newValue, e) {
-    // console.log(newValue);
-    setCode(newValue);
-  }
+  }, [selectStock]);
 
   return (
     <div>
       <div className="panel">
-        <Panel onUpdateValue={updateValue}/>
+        <Panel onUpdateValue={updateValue} onUpdateStock={updateStock}/>
       </div>
       <div className="timeselector">
         {data && extendSingle && extendDouble && extendTriple && trade && (
