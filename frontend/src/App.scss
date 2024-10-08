@@ -1,12 +1,42 @@
-.candle {
+.panel {
     float: left;
+    width: 250px;
+    height: 800px;
+}
+
+.timeselector {
+    float: left;
+    width: 700px;
+    height: 2000px;
+}
+
+.right {
+    float: left;
+    width: 700px;
+    height: 2000px;
+}
+
+.stockselector {
+    width: 700px;
+    height: 500px;
+}
+
+.evolution {
+    width: 700px;
+    height: 500px;
+}
+
+.candle {
     width: 800px;
     height: 500px;
 }
 
 .editor {
-    float: left;
     width: 800px;
-    height: 5
-    00px;
+    height: 100px;
+}
+
+.exampler {
+    width: 550px;
+    height:300px;
 }

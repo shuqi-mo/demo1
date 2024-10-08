@@ -10,18 +10,33 @@ from executer import *
 app = Flask(__name__)
 CORS(app)
 
-data_df = pd.read_csv("static/data/600893.SH.csv")
+file_path = "static/data/"
+file_name = "600893.SH.csv"
+
+data_df = pd.read_csv(file_path + file_name)
 app.secret_key = 'secret_key'
 
 @app.route('/get_stock_data')
 def get_stock_data():
     data = {}
-    data["name"] = "600893"
+    data["name"] = file_name[:9]
     stock = []
     for index, rows in data_df.iterrows():
         stock.append([rows["trade_date"],rows["open"],rows["close"],rows["high"],rows["low"],rows["vol"]])
     data["data"] = stock
     return jsonify(data)
+
+@app.route('/update_single_stock_data', methods=['POST'])
+def update_single_stock_data():
+    data = request.get_json()
+    res = {}
+    res["name"] = data["item"]
+    stock = []
+    data_df_update = pd.read_csv(file_path + data["item"] + ".csv")
+    for index, rows in data_df_update.iterrows():
+        stock.append([rows["trade_date"],rows["open"],rows["close"],rows["high"],rows["low"],rows["vol"]])
+    res["data"] = stock
+    return jsonify(res)
 
 @app.route('/get_single')
 def get_single():

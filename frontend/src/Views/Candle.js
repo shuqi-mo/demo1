@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import _ from "lodash";
 import * as d3 from "d3";
 
-const width = 800;
+const width = 700;
 const height = 500;
 const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 const margin2 = { top: 430, right: 30, bottom: 30, left: 80 };
@@ -346,6 +346,37 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         else return "white";
       });
 
+    candlestick
+      .selectAll("deal-triangle-bottom")
+      .data(stackData)
+      .enter()
+      .append("polygon")
+      .attr("class", "deal-triangle-bottom")
+      .attr("points", (v, i) => {
+        const x1 = (xScale(i) - 2) * Math.abs(v["trade"]);
+        const x2 = (xScale(i) + candlestickWidth + 2) * Math.abs(v["trade"]);
+        const y1 = (height-margin2.bottom) * Math.abs(v["trade"]);
+        const y2 = (height-margin2.bottom-5) * Math.abs(v["trade"]);
+        return (
+          String(x1) +
+          "," +
+          String(y1) +
+          " " +
+          String(x2) +
+          "," +
+          String(y1) +
+          " " +
+          String((x1 + x2) / 2) +
+          "," +
+          String(y2)
+        );
+      })
+      .attr("fill", (v, i) => {
+        if (v["trade"] === 1) return "red";
+        else if (v["trade"] === -1) return "green";
+        else return "white";
+      });
+
     var context = svg
       .append("g")
       .attr("class", "context")
@@ -513,7 +544,7 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
             return yScale(v["min"]);
         });
     }
-  }, []);
+  }, [stackData]);
 
   return (
     <div>

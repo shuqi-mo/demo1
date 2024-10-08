@@ -5,6 +5,7 @@ import Candle from "./Views/Candle";
 import MonacoEditor from "react-monaco-editor";
 import "./App.scss";
 import Exampler from "./Views/Exampler";
+import Panel from "./Views/Panel";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -17,6 +18,11 @@ function App() {
   );
   const [trade, setTrade] = useState(null);
   const [examplerData, setExamplerData] = useState(null);
+
+  const updateValue = (newValue) => {
+    setData(newValue);
+    console.log(newValue);
+  };
 
   useEffect(() => {
     axios
@@ -65,7 +71,6 @@ function App() {
       .then((response) => {
         setExamplerData(response.data);
         // console.log(response.data);
-
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -79,30 +84,43 @@ function App() {
 
   return (
     <div>
-      {data && extendSingle && extendDouble && extendTriple && trade && (
-        <div className="candle">
-          <Candle
-            data={data}
-            extend1={extendSingle}
-            extend2={extendDouble}
-            extend3={extendTriple}
-            trade={trade}
+      <div className="panel">
+        <Panel onUpdateValue={updateValue}/>
+      </div>
+      <div className="timeselector">
+        {data && extendSingle && extendDouble && extendTriple && trade && (
+          <div className="candle">
+            <Candle
+              data={data}
+              extend1={extendSingle}
+              extend2={extendDouble}
+              extend3={extendTriple}
+              trade={trade}
+            />
+          </div>
+        )}
+        <div className="editor">
+          <MonacoEditor
+            width="700"
+            height="100"
+            language="javascript"
+            // theme="vs-dark"
+            value={code}
+            // options={options}
+            onChange={codeOnChange}
+            // editorDidMount={this.editorDidMount}
           />
         </div>
-      )}
-      <div className="editor">
-        <MonacoEditor
-          width="600"
-          height="100"
-          language="javascript"
-          // theme="vs-dark"
-          value={code}
-          // options={options}
-          onChange={codeOnChange}
-          // editorDidMount={this.editorDidMount}
-        />
+        {examplerData && (
+          <div className="exampler">
+            <Exampler data={examplerData} />
+          </div>
+        )}
       </div>
-      {examplerData && <Exampler data={examplerData}/>}
+      <div className="right">
+        <div className="stockselector">stock view</div>
+        <div className="evolution">evolution view</div>
+      </div>
     </div>
   );
 }

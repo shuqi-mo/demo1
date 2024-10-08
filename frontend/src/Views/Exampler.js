@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import _ from "lodash";
 import * as d3 from "d3";
 
-const width = 550;
-const height = 350;
+const width = 450;
+const height = 250;
 const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 
 function Exampler({ data }) {
