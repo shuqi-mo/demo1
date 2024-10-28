@@ -4,7 +4,7 @@ import { Button } from "antd";
 
 function CodeEditor({ onUpdateCode }) {
   const [code, setCode] = useState(
-    "buy:cross(SMA(close,12),SMA(close,26))\r\nsell:cross(SMA(close,26),SMA(close,12))"
+    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
   );
 
   function codeOnChange(newValue, e) {
