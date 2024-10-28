@@ -1,6 +1,6 @@
 import numpy as np
 
-def MA(price, days):
+def SMA(price, days):
     n = len(price)
     res = []
     for i in range(n):

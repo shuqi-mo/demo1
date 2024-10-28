@@ -1,9 +1,9 @@
 import { List, Button } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
 function Panel({ onUpdateValue, onUpdateStock }) {
-  const stockItem = ["600893.SH", "002594.SZ"];
+  const stockItem = ["600893.SH", "002594.SZ"];   // 后端获取文件名称
   const [selectedStock, setSelectedStock] = useState("600893.SH");
   const API_URL = "http://localhost:5000";
 
@@ -28,8 +28,7 @@ function Panel({ onUpdateValue, onUpdateStock }) {
           dataSource={stockItem}
           renderItem={(item) => (
             <List.Item
-              actions={[<Button type="link" onClick={() => handleItemClick(item)}>Select</Button>]}
-              // onClick={() => handleItemClick(item)}
+              actions={[selectedStock === item ? '': <Button type="link" onClick={() => handleItemClick(item)}>Select</Button>]}
             >
               {item}
             </List.Item>

@@ -7,8 +7,9 @@ const height = 500;
 const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 const margin2 = { top: 430, right: 30, bottom: 30, left: 80 };
 const height2 = height - margin2.bottom - margin2.top;
+const dealHeight = 20;
 
-function Candle({ data, extend1, extend2, extend3, trade }) {
+function Candle({ data, trade }) {
   const d3Node = useRef(null);
   const getSvg = () => d3.select(d3Node.current);
   const checkElementExist = (element) => {
@@ -25,15 +26,6 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
     res["close"] = data.data[i][2];
     res["max"] = data.data[i][3];
     res["min"] = data.data[i][4];
-    // res["extend1"] = extend1[i];
-    // res["extend2"] = extend2[i];
-    // res["extend3"] = extend3[i];
-    // var v1 = extend1[i] ? extend1[i] : extend1[i] + 0.05;
-    // var v2 = extend2[i] ? extend2[i] : extend2[i] + 0.05;
-    // var v3 = extend3[i] ? extend3[i] : extend3[i] + 0.05;
-    // res["percentage1"] = parseFloat(v1 / (v1 + v2 + v3).toFixed(2));
-    // res["percentage2"] = parseFloat(v2 / (v1 + v2 + v3).toFixed(2));
-    // res["percentage3"] = parseFloat(v3 / (v1 + v2 + v3).toFixed(2));
     res["trade"] = trade[i];
     stackData.push(res);
   }
@@ -300,18 +292,18 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
       .attr("width", candlestickWidth)
       .attr("height", (v) => {
         // return yScale(0.5) * Math.abs(v["trade"]);
-        return 20 * Math.abs(v["trade"]);
+        return dealHeight * Math.abs(v["trade"]);
       })
       .attr("x", (v, i) => {
         return xScale(i);
       })
       .attr("y", (v, i) => {
-        return yScale(v["max"] + 2);
+        return yScale(v["max"] + 2) - dealHeight;
       })
       .attr("rx", 1)
       .attr("fill", (v, i) => {
-        if (v["trade"] === 1) return "red";
-        else if (v["trade"] === -1) return "green";
+        if (v["trade"] === 1) return "orange";
+        else if (v["trade"] === -1) return "blue";
         else return "white";
       });
 
@@ -324,8 +316,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
       .attr("points", (v, i) => {
         const x1 = (xScale(i) - 2) * Math.abs(v["trade"]);
         const x2 = (xScale(i) + candlestickWidth + 2) * Math.abs(v["trade"]);
-        const y1 = (yScale(v["max"] + 2) + 20) * Math.abs(v["trade"]);
-        const y2 = (yScale(v["max"] + 1.5) + 20) * Math.abs(v["trade"]);
+        const y1 = (yScale(v["max"] + 2)) * Math.abs(v["trade"]);
+        const y2 = (yScale(v["max"] + 1.5)) * Math.abs(v["trade"]);
         return (
           String(x1) +
           "," +
@@ -341,8 +333,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         );
       })
       .attr("fill", (v, i) => {
-        if (v["trade"] === 1) return "red";
-        else if (v["trade"] === -1) return "green";
+        if (v["trade"] === 1) return "orange";
+        else if (v["trade"] === -1) return "blue";
         else return "white";
       });
 
@@ -372,8 +364,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         );
       })
       .attr("fill", (v, i) => {
-        if (v["trade"] === 1) return "red";
-        else if (v["trade"] === -1) return "green";
+        if (v["trade"] === 1) return "orange";
+        else if (v["trade"] === -1) return "blue";
         else return "white";
       });
 
@@ -493,13 +485,13 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
         .attr("height", (v, i) => {
           // return yScale(0.5) * Math.abs(v["trade"]);
           if (xScale(i) >= 0 && xScale(i) <= xScale2(data.data.length))
-            return 20 * Math.abs(v["trade"]);
+            return dealHeight * Math.abs(v["trade"]);
         })
         .attr("x", (v, i) => {
           return xScale(i);
         })
         .attr("y", (v, i) => {
-          return yScale(v["max"] + 2);
+          return yScale(v["max"] + 2) - dealHeight;
         })
         .attr("width", getCandlestickWidth(end - start));
       focus.selectAll(".deal-triangle").attr("points", (v, i) => {
@@ -508,8 +500,8 @@ function Candle({ data, extend1, extend2, extend3, trade }) {
           const x2 =
             (xScale(i) + getCandlestickWidth(end - start) + 2) *
             Math.abs(v["trade"]);
-          const y1 = (yScale(v["max"] + 2) + 20) * Math.abs(v["trade"]);
-          const y2 = (yScale(v["max"] + 1.5) + 20) * Math.abs(v["trade"]);
+          const y1 = (yScale(v["max"] + 2)) * Math.abs(v["trade"]);
+          const y2 = (yScale(v["max"] + 1.5)) * Math.abs(v["trade"]);
           return (
             String(x1) +
             "," +

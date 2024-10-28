@@ -38,27 +38,6 @@ def update_single_stock_data():
     res["data"] = stock
     return jsonify(res)
 
-@app.route('/get_single')
-def get_single():
-    price = data_df["close"]
-    res = single(price, 0.05)
-    return jsonify(res.tolist())
-
-@app.route('/get_double')
-def get_double():
-    price = data_df["close"]
-    short = MA(price, 12)
-    long = MA(price, 26)
-    res = longShortTrend(short,long)
-    return jsonify(res.tolist())
-
-@app.route('/get_triple')
-def get_triple():
-    price = data_df["close"]
-    up, down = bolling(price, 20)
-    res = TBR(price, up, down)
-    return jsonify(res.tolist())
-
 @app.route('/receive_code', methods=['POST'])
 def receive_code():
     data = request.get_json()
