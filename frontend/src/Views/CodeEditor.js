@@ -1,11 +1,17 @@
 import MonacoEditor from "react-monaco-editor";
-import { useState } from "react";
-import { Button } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Flex, Modal } from "antd";
+import ModalPage from "./ModalPage";
+import axios from "axios";
 
-function CodeEditor({ onUpdateCode }) {
+function CodeEditor({ onUpdateCode, selectStock }) {
+  const API_URL = "http://localhost:5000";
   const [code, setCode] = useState(
     "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [examplerData, setExamplerData] = useState(null);
 
   function codeOnChange(newValue, e) {
     setCode(newValue);
@@ -14,6 +20,30 @@ function CodeEditor({ onUpdateCode }) {
   function handleExecute() {
     onUpdateCode(code);
   }
+
+  function showExampler() {
+    setIsModalOpen(true);
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  useEffect(() => {
+    // console.log(selectStock);
+    axios
+      .post(`${API_URL}/cal_exampler_data`, { code, selectStock })
+      .then((response) => {
+        setExamplerData(response.data);
+        // console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [selectStock]);
 
   return (
     <div>
@@ -27,9 +57,23 @@ function CodeEditor({ onUpdateCode }) {
         onChange={codeOnChange}
         // editorDidMount={this.editorDidMount}
       />
-      <Button type="primary" onClick={() => handleExecute()}>
-        execute
-      </Button>
+      <Flex gap="small" wrap>
+        <Button type="primary" onClick={() => handleExecute()}>
+          execute
+        </Button>
+        <Button type="primary" onClick={() => showExampler()}>
+          edit
+        </Button>
+      </Flex>
+      <Modal
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          width={1200}
+          style={{height: '1500px'}}
+        >
+          <ModalPage data={examplerData}/>
+        </Modal>
     </div>
   );
 }

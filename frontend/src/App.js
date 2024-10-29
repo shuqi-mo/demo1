@@ -3,7 +3,6 @@ import _ from "lodash";
 import axios from "axios";
 import Candle from "./Views/Candle";
 import "./App.scss";
-import Exampler from "./Views/Exampler";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 
@@ -14,7 +13,6 @@ function App() {
     "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
   );
   const [trade, setTrade] = useState(null);
-  const [examplerData, setExamplerData] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
 
   const updateValue = (newValue) => {
@@ -50,15 +48,6 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
-    axios
-      .post(`${API_URL}/cal_exampler_data`, { code, selectStock })
-      .then((response) => {
-        setExamplerData(response.data);
-        // console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
   }, [selectStock]);
 
   return (
@@ -76,13 +65,8 @@ function App() {
           </div>
         )}
         <div className="editor">
-          <CodeEditor onCodeChange={updateCode}/>
+          <CodeEditor onCodeChange={updateCode} selectStock={selectStock}/>
         </div>
-        {examplerData && (
-          <div className="exampler">
-            <Exampler data={examplerData} />
-          </div>
-        )}
       </div>
       <div className="right">
         <div className="stockselector">stock view</div>
