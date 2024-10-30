@@ -5,17 +5,6 @@ import ConstructionPage from "./ConstructionPage";
 import "../App.scss";
 import EvaluationPage from "./EvaluationPage";
 
-const steps = [
-  {
-    title: "Construction",
-    content: <ConstructionPage />,
-  },
-  {
-    title: "Evaluation",
-    content: <EvaluationPage />,
-  },
-];
-
 function ModalPage({ data }) {
   const [current, setCurrent] = useState(0);
   const next = () => {
@@ -24,6 +13,16 @@ function ModalPage({ data }) {
   const prev = () => {
     setCurrent(current - 1);
   };
+  const steps = [
+    {
+      title: "Construction",
+      content: <ConstructionPage data={data}/>,
+    },
+    {
+      title: "Evaluation",
+      content: <EvaluationPage />,
+    },
+  ];
   const items = steps.map((item) => ({
     key: item.title,
     title: item.title,
