@@ -17,9 +17,6 @@ function CodeEditor({ onCodeChange, selectStock }) {
     setCode(newValue);
   }
 
-  // function handleExecute() {
-  //   updateCode(code);
-  // }
   const handleExecute = () => {
     onCodeChange(code);
   };
@@ -54,11 +51,8 @@ function CodeEditor({ onCodeChange, selectStock }) {
         width="700"
         height="150"
         language="javascript"
-        // theme="vs-dark"
         value={code}
-        // options={options}
         onChange={codeOnChange}
-        // editorDidMount={this.editorDidMount}
       />
       <Flex gap="small" wrap>
         <Button type="primary" onClick={() => handleExecute()}>
@@ -75,7 +69,7 @@ function CodeEditor({ onCodeChange, selectStock }) {
           width={1200}
           style={{height: '1500px'}}
         >
-          <ModalPage data={examplerData}/>
+          <ModalPage data={examplerData} onUpdateParam={codeOnChange}/>
         </Modal>
     </div>
   );

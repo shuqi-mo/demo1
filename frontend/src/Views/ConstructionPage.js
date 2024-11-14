@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import "../App.scss";
-import { Input, Space, Select, Flex } from "antd";
+import { Input, Space, Select, Flex, Button } from "antd";
 
-function ConstructionPage({ data }) {
+function ConstructionPage({ data, onUpdateParam }) {
   const [code, setCode] = useState(
-    data[1].map((item) => {
+    data[0][1].map((item) => {
       return {
         aggregation: item[0],
         data: item[1],
@@ -13,9 +13,11 @@ function ConstructionPage({ data }) {
     })
   );
 
+  // console.log(data[1]);
+
   useEffect(() => {
     setCode(
-      data[1].map((item) => {
+      data[0][1].map((item) => {
         return {
           aggregation: item[0],
           data: item[1],
@@ -67,9 +69,35 @@ function ConstructionPage({ data }) {
     },
   ];
 
-  const handleDataChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  function convertArrayToString(arr) {
+    return arr.map(item => {
+      const [type, [operation, ...pairs]] = item;
+      const formattedPairs = pairs.map((pair, index) => {
+        const [indicator, field, period] = pair;
+        return `${indicator}(${field},${period})`;
+      });
+      const operationStr = `${operation}(${formattedPairs.join(',')})`;
+      return `${type}:${operationStr}`;
+    }).join('\r\n');
+  }
+
+  const update = () => {
+    const updateParam = [];
+    for (var i = 0; i < code.length; i++) {
+      const item = [];
+      item.push(code[i]["aggregation"]);
+      item.push(code[i]["data"]);
+      item.push(code[i]["param"]);
+      updateParam.push(item);
+    }
+    // console.log(updateParam);
+    data[1][0][1][1] = updateParam[0];
+    data[1][0][1][2] = updateParam[1];
+    data[1][1][1][1] = updateParam[1];
+    data[1][1][1][2] = updateParam[0];
+    // console.log(convertArrayToString(data[1]));
+    onUpdateParam(convertArrayToString(data[1]));
+  }
 
   return (
     <div>
@@ -96,7 +124,11 @@ function ConstructionPage({ data }) {
               <Select
                 key={`${index}-data`}
                 defaultValue={item.data}
-                onChange={handleDataChange}
+                onChange={(v) => {
+                  const updateCode = code;
+                  updateCode[index]["data"] = v;
+                  setCode(updateCode);
+                }}
                 options={optionsData}
                 style={{ width: 120 }}
               />
@@ -105,9 +137,17 @@ function ConstructionPage({ data }) {
               key={`${index}-param`}
               addonBefore="param"
               defaultValue={item.param}
+              onChange={(e) => {
+                const updateCode = code;
+                updateCode[index]["param"] = e.target.value;
+                setCode(updateCode);
+              }}
             />
           </>
         ))}
+        <Button type="primary" onClick={() => update()}>
+          update
+        </Button>
       </Space>
     </div>
   );

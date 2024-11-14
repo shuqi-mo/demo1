@@ -5,7 +5,7 @@ import ConstructionPage from "./ConstructionPage";
 import "../App.scss";
 import EvaluationPage from "./EvaluationPage";
 
-function ModalPage({ data }) {
+function ModalPage({ data, onUpdateParam, code }) {
   const [current, setCurrent] = useState(0);
   const next = () => {
     setCurrent(current + 1);
@@ -16,7 +16,7 @@ function ModalPage({ data }) {
   const steps = [
     {
       title: "Construction",
-      content: <ConstructionPage data={data}/>,
+      content: <ConstructionPage data={data} onUpdateParam={onUpdateParam}/>,
     },
     {
       title: "Evaluation",
@@ -32,7 +32,7 @@ function ModalPage({ data }) {
     <div>
       <Flex>
         <Layout style={{background: "white"}}>
-          <Exampler data={data} />
+          <Exampler data={data[0]} />
         </Layout>
         <Layout style={{background: "white"}}>
           <Steps current={current} items={items} />

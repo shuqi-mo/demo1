@@ -52,6 +52,7 @@ def receive_code():
 
 @app.route('/cal_exampler_data', methods=['POST'])
 def cal_exampler_data():
+    res = []
     data = request.get_json()
     parseResult = parseCode(data)
     data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
@@ -59,7 +60,9 @@ def cal_exampler_data():
     sell = execute(parseResult[1][1], data_df)
     # 数组中1表示买入，-1表示卖出
     trade = (buy - sell).tolist()
-    res = execute_exampler(parseResult[0][1], parseResult[1][1], data_df, trade)
+    exampler = execute_exampler(parseResult[0][1], parseResult[1][1], data_df, trade)
+    res.append(exampler)
+    res.append(parseResult.asList())
     return jsonify(res)
 
 if __name__ == '__main__':
