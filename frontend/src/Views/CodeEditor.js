@@ -46,7 +46,7 @@ function CodeEditor({ onCodeChange, selectStock }) {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [selectStock]);
+  }, [selectStock, code]);
 
   return (
     <div>

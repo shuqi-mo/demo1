@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../App.scss";
 import { Input, Space, Select, Flex } from "antd";
 
@@ -13,7 +13,17 @@ function ConstructionPage({ data }) {
     })
   );
 
-  console.log(data)
+  useEffect(() => {
+    setCode(
+      data[1].map((item) => {
+        return {
+          aggregation: item[0],
+          data: item[1],
+          param: item[2],
+        };
+      })
+    );
+  }, [data]);
 
   const optionsAggregation = [
     {
