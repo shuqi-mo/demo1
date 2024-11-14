@@ -4,7 +4,7 @@ import { Button, Flex, Modal } from "antd";
 import ModalPage from "./ModalPage";
 import axios from "axios";
 
-function CodeEditor({ onUpdateCode, selectStock }) {
+function CodeEditor({ onCodeChange, selectStock }) {
   const API_URL = "http://localhost:5000";
   const [code, setCode] = useState(
     "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
@@ -17,9 +17,12 @@ function CodeEditor({ onUpdateCode, selectStock }) {
     setCode(newValue);
   }
 
-  function handleExecute() {
-    onUpdateCode(code);
-  }
+  // function handleExecute() {
+  //   updateCode(code);
+  // }
+  const handleExecute = () => {
+    onCodeChange(code);
+  };
 
   function showExampler() {
     setIsModalOpen(true);

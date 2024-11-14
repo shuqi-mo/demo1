@@ -23,9 +23,9 @@ function App() {
     setSelectStock(newName);
   };
 
-  function updateCode(newValue) {
+  const updateCode = (newValue) => {
     setCode(newValue);
-  }
+  };
 
   useEffect(() => {
     axios
@@ -48,7 +48,7 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [selectStock]);
+  }, [selectStock, code]);
 
   return (
     <div>
@@ -69,7 +69,7 @@ function App() {
         </div>
       </div>
       <div className="right">
-        <div className="stockselector">stock view</div>
+        <div className="stockselector">analysis view</div>
         <div className="evolution">evolution view</div>
       </div>
     </div>

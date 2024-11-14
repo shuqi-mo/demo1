@@ -25,7 +25,7 @@ def execute(parse, stock):
     expr = eval(funname + "(" + str(param1) + "," + str(param2) + ")")
     return expr
 
-def execute_exampler(parse_buy, parse_sell,  stock, tradePoint):
+def execute_exampler(parse_buy, parse_sell, stock, tradePoint):
     param = []
     param_name = []
     parse_buy = parse_buy.asList()
@@ -71,5 +71,4 @@ def execute_exampler(parse_buy, parse_sell,  stock, tradePoint):
     for i in range(len(tradeSeq)):
         output.append(tradeSeq[i][len(tradeSeq[0])-1])
     output = minMaxNormalizeForMultiSeq(output)
-    # print(param_name)
     return [output,param_name]

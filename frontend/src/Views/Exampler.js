@@ -111,13 +111,6 @@ function Exampler({ data }) {
         return res;
       });
 
-    // 点击事件
-    legend.on("click", (event, d) => {
-      // 弹出输入框
-      const new_value = prompt("Enter new legend:");
-      console.log(new_value);
-    });
-
     // 添加外框
     svg
       .append("rect")

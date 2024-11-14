@@ -1,18 +1,19 @@
+import { useState } from "react";
 import "../App.scss";
 import { Input, Space, Select, Flex } from "antd";
 
 function ConstructionPage({ data }) {
-  const code = data[1].map((item) => {
-    return {
-      aggregation: item[0],
-      data: item[1],
-      param: item[2],
-    };
-  });
+  const [code, setCode] = useState(
+    data[1].map((item) => {
+      return {
+        aggregation: item[0],
+        data: item[1],
+        param: item[2],
+      };
+    })
+  );
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  console.log(data)
 
   const optionsAggregation = [
     {
@@ -56,6 +57,10 @@ function ConstructionPage({ data }) {
     },
   ];
 
+  const handleDataChange = (value) => {
+    console.log(`selected ${value}`);
+  };
+
   return (
     <div>
       <Space direction="vertical">
@@ -67,7 +72,11 @@ function ConstructionPage({ data }) {
               <Select
                 key={`${index}-aggregation`}
                 defaultValue={item.aggregation}
-                onChange={handleChange}
+                onChange={(v) => {
+                  const updateCode = code;
+                  updateCode[index]["aggregation"] = v;
+                  setCode(updateCode);
+                }}
                 options={optionsAggregation}
                 style={{ width: 120 }}
               />
@@ -77,7 +86,7 @@ function ConstructionPage({ data }) {
               <Select
                 key={`${index}-data`}
                 defaultValue={item.data}
-                onChange={handleChange}
+                onChange={handleDataChange}
                 options={optionsData}
                 style={{ width: 120 }}
               />
