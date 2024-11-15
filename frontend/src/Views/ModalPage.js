@@ -5,7 +5,7 @@ import ConstructionPage from "./ConstructionPage";
 import "../App.scss";
 import EvaluationPage from "./EvaluationPage";
 
-function ModalPage({ data, onUpdateParam, code }) {
+function ModalPage({ data, onUpdateParam, stock, onRangeChange}) {
   const [current, setCurrent] = useState(0);
   const next = () => {
     setCurrent(current + 1);
@@ -20,7 +20,7 @@ function ModalPage({ data, onUpdateParam, code }) {
     },
     {
       title: "Evaluation",
-      content: <EvaluationPage />,
+      content: <EvaluationPage stock={stock} onRangeChange={onRangeChange}/>,
     },
   ];
   const items = steps.map((item) => ({

@@ -6,6 +6,7 @@ from indicator import *
 from strategy import *
 from parser import *
 from executer import *
+from evaluation import *
 
 app = Flask(__name__)
 CORS(app)
@@ -63,6 +64,12 @@ def cal_exampler_data():
     exampler = execute_exampler(parseResult[0][1], parseResult[1][1], data_df, trade)
     res.append(exampler)
     res.append(parseResult.asList())
+    return jsonify(res)
+
+@app.route('/backtest', methods=['POST'])
+def backtest():
+    data = request.get_json()
+    res = calBacktest(data["price"],data["tradepoint"])
     return jsonify(res)
 
 if __name__ == '__main__':

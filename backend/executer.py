@@ -60,7 +60,7 @@ def execute_exampler(parse_buy, parse_sell, stock, tradePoint):
             elif tradePoint[j] == -1:
                 if buyPoint != -1:
                     sellPoint = j
-                    seq.append(param[i][buyPoint:sellPoint+1])
+                    seq.append(param[i][buyPoint-1:sellPoint+1])
                     buyPoint = -1
                 else:
                     continue

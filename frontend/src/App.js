@@ -5,6 +5,7 @@ import Candle from "./Views/Candle";
 import "./App.scss";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
+import Backtest from "./Views/Backtest";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -14,6 +15,7 @@ function App() {
   );
   const [trade, setTrade] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
+  const [backtestRange, setBacktestRange] = useState(['2022-07-01', '2024-07-01']);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -26,6 +28,11 @@ function App() {
   const updateCode = (newValue) => {
     setCode(newValue);
   };
+
+  const updateRange = (newRange) => {
+    setBacktestRange(newRange);
+    console.log(newRange);
+  }
 
   useEffect(() => {
     axios
@@ -53,24 +60,27 @@ function App() {
   return (
     <div>
       <div className="panel">
-        <Panel onUpdateValue={updateValue} onUpdateStock={updateStock}/>
+        <Panel onUpdateValue={updateValue} onUpdateStock={updateStock} />
       </div>
       <div className="timeselector">
         {data && trade && (
           <div className="candle">
-            <Candle
-              data={data}
-              trade={trade}
-            />
+            <Candle data={data} trade={trade} />
           </div>
         )}
         <div className="editor">
-          <CodeEditor onCodeChange={updateCode} selectStock={selectStock}/>
+          <CodeEditor
+            onCodeChange={updateCode}
+            selectStock={selectStock}
+            stock={data}
+            onRangeChange={updateRange}
+          />
         </div>
       </div>
       <div className="right">
-        <div className="stockselector">analysis view</div>
-        <div className="evolution">evolution view</div>
+        <div className="backtest">
+          {data && trade && <Backtest stock={data["data"]} trade={trade} range={backtestRange}/>}
+        </div>
       </div>
     </div>
   );
