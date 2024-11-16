@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Exampler from "./Exampler";
-import { Button, Flex, Layout, message, Steps } from "antd";
+import { Button, Flex, Layout, Steps } from "antd";
 import ConstructionPage from "./ConstructionPage";
 import "../App.scss";
 import EvaluationPage from "./EvaluationPage";
 
-function ModalPage({ data, onUpdateParam, stock, onRangeChange}) {
+function ModalPage({ data, onUpdateParam, stock}) {
   const [current, setCurrent] = useState(0);
   const next = () => {
     setCurrent(current + 1);
@@ -20,7 +20,7 @@ function ModalPage({ data, onUpdateParam, stock, onRangeChange}) {
     },
     {
       title: "Evaluation",
-      content: <EvaluationPage stock={stock} onRangeChange={onRangeChange}/>,
+      content: <EvaluationPage data={data} stock={stock} onUpdateParam={onUpdateParam}/>,
     },
   ];
   const items = steps.map((item) => ({
@@ -45,14 +45,6 @@ function ModalPage({ data, onUpdateParam, stock, onRangeChange}) {
             {current < steps.length - 1 && (
               <Button type="primary" onClick={() => next()}>
                 Next
-              </Button>
-            )}
-            {current === steps.length - 1 && (
-              <Button
-                type="primary"
-                onClick={() => message.success("Processing complete!")}
-              >
-                Done
               </Button>
             )}
             {current > 0 && (

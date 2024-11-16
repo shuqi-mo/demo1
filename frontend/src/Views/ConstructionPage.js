@@ -69,18 +69,6 @@ function ConstructionPage({ data, onUpdateParam }) {
     },
   ];
 
-  function convertArrayToString(arr) {
-    return arr.map(item => {
-      const [type, [operation, ...pairs]] = item;
-      const formattedPairs = pairs.map((pair, index) => {
-        const [indicator, field, period] = pair;
-        return `${indicator}(${field},${period})`;
-      });
-      const operationStr = `${operation}(${formattedPairs.join(',')})`;
-      return `${type}:${operationStr}`;
-    }).join('\r\n');
-  }
-
   const update = () => {
     const updateParam = [];
     for (var i = 0; i < code.length; i++) {
@@ -95,8 +83,7 @@ function ConstructionPage({ data, onUpdateParam }) {
     data[1][0][1][2] = updateParam[1];
     data[1][1][1][1] = updateParam[1];
     data[1][1][1][2] = updateParam[0];
-    // console.log(convertArrayToString(data[1]));
-    onUpdateParam(convertArrayToString(data[1]));
+    onUpdateParam(data[1]);
   }
 
   return (

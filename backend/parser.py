@@ -1,4 +1,4 @@
-from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore, OneOrMore
+from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore, OneOrMore, Regex
 
 def parseCode(text):
     # 定义数字和标识符
@@ -6,6 +6,7 @@ def parseCode(text):
     identifier = Word(alphas, alphanums + "_")
     action = Word(alphas)
     colon = Suppress(":")
+    date = Regex(r"\d\d\d\d-\d\d-\d\d")
 
     # 使用 Forward 声明一个前瞻性解析表达式
     expr = Forward()
@@ -14,11 +15,12 @@ def parseCode(text):
     func_call = Group(
         identifier("func_name") +
         Suppress("(") +
-        expr("arg") + 
-        ZeroOrMore(Suppress(",") + expr("arg")) +
+        ZeroOrMore(expr + Suppress(",")) +  # 允许多个参数，用逗号分隔
+        expr +  # 最后一个参数后不加逗号
         Suppress(")")
     )
-    expr <<= func_call | number | identifier
+
+    expr <<= func_call | date | number | identifier
     complex_expr = OneOrMore(Group(action + colon + expr))
     result = complex_expr.parseString(text['code'])
     return(result)

@@ -11,7 +11,7 @@ function App() {
   const API_URL = "http://localhost:5000";
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
+    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
   );
   const [trade, setTrade] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
@@ -31,7 +31,7 @@ function App() {
 
   const updateRange = (newRange) => {
     setBacktestRange(newRange);
-    console.log(newRange);
+    // console.log(newRange);
   }
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function App() {
             onCodeChange={updateCode}
             selectStock={selectStock}
             stock={data}
-            onRangeChange={updateRange}
+            updateRange={updateRange}
           />
         </div>
       </div>

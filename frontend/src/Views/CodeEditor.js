@@ -4,16 +4,33 @@ import { Button, Flex, Modal } from "antd";
 import ModalPage from "./ModalPage";
 import axios from "axios";
 
-function CodeEditor({ onCodeChange, selectStock, stock, onRangeChange}) {
+function CodeEditor({ onCodeChange, selectStock, stock, updateRange}) {
   const API_URL = "http://localhost:5000";
   const [code, setCode] = useState(
-    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))"
+    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [examplerData, setExamplerData] = useState(null);
 
+  function convertArrayToString(arr) {
+    return arr.map(item => {
+      const [type, [operation, ...pairs]] = item;
+      const formattedPairs = pairs.map((pair, index) => {
+        // 日期格式
+        if (pair.length === 10) {
+          return pair;
+        }
+        const [indicator, field, period] = pair;
+        return `${indicator}(${field},${period})`;
+      });
+      const operationStr = `${operation}(${formattedPairs.join(',')})`;
+      return `${type}:${operationStr}`;
+    }).join('\r\n');
+  }
+
   function codeOnChange(newValue, e) {
-    setCode(newValue);
+    setCode(convertArrayToString(newValue));
+    updateRange([newValue[2][1][1],newValue[2][1][2]]);
   }
 
   const handleExecute = () => {
@@ -25,6 +42,7 @@ function CodeEditor({ onCodeChange, selectStock, stock, onRangeChange}) {
   }
 
   const handleOk = () => {
+    handleExecute();
     setIsModalOpen(false);
   };
   const handleCancel = () => {
@@ -68,7 +86,7 @@ function CodeEditor({ onCodeChange, selectStock, stock, onRangeChange}) {
           width={1200}
           style={{height: '1500px'}}
         >
-          <ModalPage data={examplerData} onUpdateParam={codeOnChange} stock={stock} onRangeChange={onRangeChange}/>
+          <ModalPage data={examplerData} onUpdateParam={codeOnChange} stock={stock}/>
         </Modal>
     </div>
   );
