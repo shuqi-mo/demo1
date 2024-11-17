@@ -6,6 +6,7 @@ const height = 250;
 const margin = { top: 20, right: 30, bottom: 110, left: 80 };
 
 function BacktestEvl({ res }) {
+  // console.log(res);
   const d3Node = useRef(null);
   const getSvg = () => d3.select(d3Node.current);
   const checkElementExist = (element) => {
@@ -71,6 +72,8 @@ function BacktestEvl({ res }) {
 
   return (
     <div>
+      <div>transaction times: {res[0].length}</div>
+      <div>success times: {res[0].reduce((accumulator, currentValue) => accumulator + currentValue, 0)}</div>
       <div ref={d3Node} />
     </div>
   );

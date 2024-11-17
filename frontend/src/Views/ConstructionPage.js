@@ -3,6 +3,7 @@ import "../App.scss";
 import { Input, Space, Select, Flex, Button } from "antd";
 
 function ConstructionPage({ data, onUpdateParam }) {
+  console.log(data);
   const [code, setCode] = useState(
     data[0][1].map((item) => {
       return {
@@ -26,6 +27,21 @@ function ConstructionPage({ data, onUpdateParam }) {
       })
     );
   }, [data]);
+
+  const optionsOperation = [
+    {
+      value: "cross",
+      label: "cross",
+    },
+    {
+      value: "over",
+      label: "over",
+    },
+    {
+      value: "flux",
+      label: "flux",
+    },
+  ];
 
   const optionsAggregation = [
     {
@@ -84,11 +100,17 @@ function ConstructionPage({ data, onUpdateParam }) {
     data[1][1][1][1] = updateParam[1];
     data[1][1][1][2] = updateParam[0];
     onUpdateParam(data[1]);
-  }
+  };
 
   return (
     <div>
       <Space direction="vertical">
+        <div>Operation</div>
+        <Select
+          options={optionsOperation}
+          defaultValue={"cross"}
+          style={{ width: 120 }}
+        />
         {code.map((item, index) => (
           <>
             <p>{`Indicator ${index + 1}`}</p>
