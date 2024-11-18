@@ -61,18 +61,22 @@ def VWMA(price, volume, days):
             vwma.append(round(t/d,2))
     return vwma
 
-def bolling(price, days):
-    n = len(price)
-    mid = MA(price, days)
-    std = np.zeros(n)
-    for i in range(n-days):
+def movingstd(price, days):
+    res = []
+    for i in range(len(price)):
         if i < days:
+            res.append(0)
             continue
-        w = price[i:i+days]
-        std[i:i+days] = np.std(w)
-    up = mid + 2 * std
-    down = mid - 2 * std
-    for i in range(days):
-        up[i] = 0
-        down[i] = 0
-    return up, down
+        else:
+            w = price[i:i+days]
+            res.append(np.std(w))
+    return res
+
+def bolling(mid, std, multiplier, upordown):
+    band = multiplier * std
+    up = [a + b for a, b in zip(mid, band)]
+    down = [a - b for a, b in zip(mid, band)]
+    if upordown == 0:
+        return up
+    elif upordown == 1:
+        return down

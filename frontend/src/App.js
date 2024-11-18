@@ -11,11 +11,15 @@ function App() {
   const API_URL = "http://localhost:5000";
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
+    // "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
+     "buy:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,0))\r\nsell:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,1))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
   );
   const [trade, setTrade] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
-  const [backtestRange, setBacktestRange] = useState(['2022-07-01', '2024-07-01']);
+  const [backtestRange, setBacktestRange] = useState([
+    "2022-07-01",
+    "2024-07-01",
+  ]);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -32,7 +36,7 @@ function App() {
   const updateRange = (newRange) => {
     setBacktestRange(newRange);
     // console.log(newRange);
-  }
+  };
 
   useEffect(() => {
     axios
@@ -70,6 +74,7 @@ function App() {
         )}
         <div className="editor">
           <CodeEditor
+            code={code}
             onCodeChange={updateCode}
             selectStock={selectStock}
             stock={data}
@@ -79,7 +84,13 @@ function App() {
       </div>
       <div className="right">
         <div className="backtest">
-          {data && trade && <Backtest stock={data["data"]} trade={trade} range={backtestRange}/>}
+          {data && trade && (
+            <Backtest
+              stock={data["data"]}
+              trade={trade}
+              range={backtestRange}
+            />
+          )}
         </div>
       </div>
     </div>
