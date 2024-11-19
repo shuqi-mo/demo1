@@ -3,7 +3,7 @@ import "../App.scss";
 import { Input, Space, Select, Flex, Button } from "antd";
 
 function ConstructionPage({ data, onUpdateParam }) {
-  console.log(data);
+  // console.log(data);
   const [code, setCode] = useState(
     data[0][1].map((item) => {
       return {

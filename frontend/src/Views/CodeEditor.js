@@ -27,8 +27,11 @@ function CodeEditor({ code, onCodeChange, selectStock, stock, updateRange}) {
   }
 
   function codeOnChange(newValue, e) {
-    setTempcode(convertArrayToString(newValue));
+    const v = convertArrayToString(newValue);
+    setTempcode(v);
     updateRange([newValue[2][1][1],newValue[2][1][2]]);
+    onCodeChange(v);
+    // code = tempcode;
   }
 
   const handleExecute = () => {
