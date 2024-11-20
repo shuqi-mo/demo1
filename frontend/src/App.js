@@ -6,6 +6,7 @@ import "./App.scss";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 import Backtest from "./Views/Backtest";
+import Upset from "./Views/Upset";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -85,6 +86,7 @@ function App() {
         </div>
       </div>
       <div className="right">
+        <Upset/>
         <div className="backtest">
           {data && trade && (
             <Backtest
