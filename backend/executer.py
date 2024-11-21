@@ -16,34 +16,24 @@ def execute(parse, stock):
         if param in ["close", "open", "high", "low"]:
             return list(stock[param])
         # 检查是否是子表达式
-        elif len(param) in [3, 5]:
+        elif isinstance(param, list):
             return execute(param, stock)
         else:
             return param
 
-    # 根据参数数量执行不同的逻辑
-    if len(parse) == 3:
-        funname, param1, param2 = parse
-        param1 = process_param(param1, stock)
-        param2 = process_param(param2, stock)
-        expr = eval(f"{funname}({param1},{param2})")
-    elif len(parse) == 5:
-        funname, param1, param2, param3, param4 = parse
-        param1 = process_param(param1, stock)
-        param2 = process_param(param2, stock)
-        param3 = process_param(param3, stock)
-        param4 = process_param(param4, stock)
-        expr = eval(f"{funname}({param1},{param2},{param3},{param4})")
-    else:
-        raise ValueError("Invalid number of parameters in parse")
-
+    # 提取函数名
+    funname = parse[0]
+    # 处理其余的参数
+    params = [process_param(param, stock) for param in parse[1:]]
+    # 构建参数字符串
+    params_str = ', '.join(map(str, params))
+    # 使用eval执行函数
+    expr = eval(f"{funname}({params_str})")
     return expr
 
 def execute_exampler(parse_buy, parse_sell, stock, tradePoint):
     param = []
     param_name = []
-    parse_buy = parse_buy.asList()
-    parse_sell = parse_sell.asList()
     if len(parse_buy) == 3:
         funname_buy = parse_buy[0]
         if len(parse_buy[1]) == 3:

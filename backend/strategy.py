@@ -10,6 +10,21 @@ def cross(short, long):
             trade[i+1] = 1
     return trade
 
+def over(*args, **kwargs):
+    n_args = len(args)
+    n_trade = len(args[0])
+    trade = np.zeros(n_trade)
+    for i in range(n_trade):
+        cur = args[0][i]
+        for j in range(1,n_args):
+            if args[j][i] == 0 or args[j][i] > cur:
+                break
+            else:
+                cur = args[j][i]
+            if j == n_args - 1:
+                trade[i] = 1
+    return trade
+
 # def minMaxNormalize(data):
 #     n = len(data)
 #     res = np.zeros(n)

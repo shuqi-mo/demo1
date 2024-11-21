@@ -50,18 +50,18 @@ function CodeEditor({ code, onCodeChange, selectStock, stock, updateRange}) {
     setIsModalOpen(false);
   };
 
-  useEffect(() => {
-    // console.log(selectStock);
-    axios
-      .post(`${API_URL}/cal_exampler_data`, { code, selectStock })
-      .then((response) => {
-        setExamplerData(response.data);
-        // console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }, [selectStock, code]);
+  // useEffect(() => {
+  //   // console.log(selectStock);
+  //   axios
+  //     .post(`${API_URL}/cal_exampler_data`, { code, selectStock })
+  //     .then((response) => {
+  //       setExamplerData(response.data);
+  //       // console.log(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
+  // }, [selectStock, code]);
 
   return (
     <div>
@@ -76,9 +76,9 @@ function CodeEditor({ code, onCodeChange, selectStock, stock, updateRange}) {
         <Button type="primary" onClick={() => handleExecute()}>
           execute
         </Button>
-        <Button type="primary" onClick={() => showExampler()}>
+        {/* <Button type="primary" onClick={() => showExampler()}>
           edit
-        </Button>
+        </Button> */}
       </Flex>
       <Modal
           open={isModalOpen}

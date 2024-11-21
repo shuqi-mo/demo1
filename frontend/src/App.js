@@ -12,8 +12,8 @@ function App() {
   const API_URL = "http://localhost:5000";
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
-    //  "buy:cross(EMA(close,12),bolling(EMA(close,9),movingstd(close,9),2,0))\r\nsell:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,1))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
+    // "buy:cross(EMA(close,12),EMA(close,26))\r\nsell:cross(EMA(close,26),EMA(close,12))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
+     "buy:cross(EMA(close,12),bolling(EMA(close,9),movingstd(close,9),2,0))\r\nsell:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,1))\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
     // "buy:cross(close,EMA(close,26))\r\nsell:cross(EMA(close,26),close)\r\nevaluation:evaRange(2022-07-01,2024-07-01)"
   );
   const [trade, setTrade] = useState(null);
