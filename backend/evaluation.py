@@ -1,4 +1,4 @@
-def calBacktest(price, trade):
+def calBacktest(price, trade, ahead = -1):
     success = []
     profit = []
     profitpent = []
@@ -8,26 +8,44 @@ def calBacktest(price, trade):
             continue
         # 多头进场
         if trade[i] == 1:
-            for j in range(i+1,len(trade)):
-                if trade[j] == -1:
-                    if price[i] < price[j]:
-                        success.append(1)
-                    else:
-                        success.append(0)
-                    totalprofit += price[j] - price[i]
-                    profit.append(totalprofit)
-                    profitpent.append((price[j]-price[i])/price[i])
-                    break
+            if ahead == -1:
+                for j in range(i+1,len(trade)):
+                    if trade[j] == -1:
+                        if price[i] < price[j]:
+                            success.append(1)
+                        else:
+                            success.append(0)
+                        totalprofit += price[j] - price[i]
+                        profit.append(totalprofit)
+                        profitpent.append((price[j]-price[i])/price[i])
+                        break
+            else:
+                if price[i] < price[i+ahead]:
+                    success.append(1)
+                else:
+                    success.append(0)
+                totalprofit += price[i+ahead] - price[i]
+                profit.append(totalprofit)
+                profitpent.append((price[i+ahead]-price[i])/price[i])
         # 空头进场
         if trade[i] == -1:
-             for j in range(i+1,len(trade)):
-                if trade[j] == 1:
-                    if price[i] > price[j]:
-                        success.append(1)
-                    else:
-                        success.append(0)
-                    totalprofit += price[i] - price[j]
-                    profit.append(totalprofit)
-                    profitpent.append((price[i]-price[j])/price[i])
-                    break
+            if ahead == -1:
+                for j in range(i+1,len(trade)):
+                    if trade[j] == 1:
+                        if price[i] > price[j]:
+                            success.append(1)
+                        else:
+                            success.append(0)
+                        totalprofit += price[i] - price[j]
+                        profit.append(totalprofit)
+                        profitpent.append((price[i]-price[j])/price[i])
+                        break
+            else:
+                if price[i] > price[i+ahead]:
+                    success.append(1)
+                else:
+                    success.append(0)
+                totalprofit += price[i] - price[i+ahead]
+                profit.append(totalprofit)
+                profitpent.append((price[i]-price[i+ahead])/price[i])
     return [success,profit,profitpent]

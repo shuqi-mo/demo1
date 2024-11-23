@@ -140,7 +140,8 @@ function Upset() {
   // ie. the outersect of values in the solo sets, call this function
   const data = insertSoloDataOutersect(intersections, soloSets);
 
-  //   console.log(data);
+  console.log(data);
+  console.log(soloSets);
 
   useEffect(() => {
     checkElementExist(getSvg().selectAll("svg"));
@@ -164,7 +165,7 @@ function Upset() {
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", [0, 0, width, height*1.5]);
+      .attr("viewBox", [0, 0, width, height * 1.5]);
 
     // make a group for the upset circle intersection things
     const upsetCircles = svg
