@@ -140,8 +140,8 @@ function Upset() {
   // ie. the outersect of values in the solo sets, call this function
   const data = insertSoloDataOutersect(intersections, soloSets);
 
-  console.log(data);
-  console.log(soloSets);
+  // console.log(data);
+  // console.log(soloSets);
 
   useEffect(() => {
     checkElementExist(getSvg().selectAll("svg"));

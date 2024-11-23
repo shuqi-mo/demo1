@@ -12,16 +12,13 @@ function App() {
   const API_URL = "http://localhost:5000";
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "long:cross(EMA(close,12),EMA(close,26))\r\nshort:cross(EMA(close,26),EMA(close,12))\r\nevaluation:constraint(2022-07-01,2024-07-01)"
+    "long:cross(EMA(close,12),EMA(close,26))\r\nshort:cross(EMA(close,26),EMA(close,12))\r\nevaluation:period(2022-07-01,2024-07-01)"
     //  "long:cross(EMA(close,12),bolling(EMA(close,9),movingstd(close,9),2,0))\r\nshort:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,1))\r\nevaluation:constraint(2022-07-01,2024-07-01)"
     // "long:over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:cross(EMA(close,26),close)\r\nevaluation:constraint(2022-07-01,2024-07-01)"
   );
   const [trade, setTrade] = useState(null);
+  const [evaluation, setEvaluation] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
-  const [backtestRange, setBacktestRange] = useState([
-    "2022-07-01",
-    "2024-07-01",
-  ]);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -33,11 +30,6 @@ function App() {
 
   const updateCode = (newValue) => {
     setCode(newValue);
-  };
-
-  const updateRange = (newRange) => {
-    setBacktestRange(newRange);
-    // console.log(newRange);
   };
 
   useEffect(() => {
@@ -53,9 +45,10 @@ function App() {
 
   useEffect(() => {
     axios
-      .post(`${API_URL}/receive_code`, { code, selectStock })
+      .post(`${API_URL}/process_code`, { code, selectStock })
       .then((response) => {
-        setTrade(response.data);
+        setTrade(response.data[0]);
+        setEvaluation(response.data[1]);
         // console.log(code);
         // console.log(response.data);
       })
@@ -81,18 +74,17 @@ function App() {
             onCodeChange={updateCode}
             selectStock={selectStock}
             stock={data}
-            updateRange={updateRange}
           />
         </div>
       </div>
       <div className="right">
         <Upset/>
         <div className="backtest">
-          {data && trade && (
+          {data && trade && evaluation && (
             <Backtest
               stock={data["data"]}
               trade={trade}
-              range={backtestRange}
+              evaluation={evaluation}
             />
           )}
         </div>

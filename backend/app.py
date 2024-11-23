@@ -39,8 +39,8 @@ def update_single_stock_data():
     res["data"] = stock
     return jsonify(res)
 
-@app.route('/receive_code', methods=['POST'])
-def receive_code():
+@app.route('/process_code', methods=['POST'])
+def process_code():
     data = request.get_json()
     # print(data["code"])
     parseResult = parseCode(data)
@@ -48,8 +48,9 @@ def receive_code():
     buy = execute(parseResult[0][1].asList(), data_df)
     sell = execute(parseResult[1][1].asList(), data_df)
     # 数组中1表示买入，-1表示卖出
-    res = (buy - sell).tolist()
-    return jsonify(res)
+    trade = (buy - sell).tolist()
+    evalRes = evaluation(parseResult[2][1].asList(), data_df, trade)
+    return jsonify([trade,evalRes])
 
 @app.route('/cal_exampler_data', methods=['POST'])
 def cal_exampler_data():

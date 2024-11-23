@@ -4,7 +4,7 @@ import { Button, Flex, Modal } from "antd";
 import ModalPage from "./ModalPage";
 import axios from "axios";
 
-function CodeEditor({ code, onCodeChange, selectStock, stock, updateRange}) {
+function CodeEditor({ code, onCodeChange, selectStock, stock}) {
   const API_URL = "http://localhost:5000";
   const [tempcode, setTempcode] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +29,6 @@ function CodeEditor({ code, onCodeChange, selectStock, stock, updateRange}) {
   function codeOnChange(newValue, e) {
     const v = convertArrayToString(newValue);
     setTempcode(v);
-    updateRange([newValue[2][1][1],newValue[2][1][2]]);
     onCodeChange(v);
     // code = tempcode;
   }

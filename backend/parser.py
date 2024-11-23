@@ -1,4 +1,4 @@
-from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore, OneOrMore, Regex
+from pyparsing import Word, alphas, alphanums, Group, Suppress, Forward, nums, ZeroOrMore, OneOrMore, Regex, Keyword
 
 def parseCode(text):
     # 定义关键字
@@ -27,7 +27,7 @@ def parseCode(text):
         Suppress(")")
     )
 
-    expr <<= func_call | date | number | identifier
+    expr <<= func_call | Group(date + Suppress(",") + date) | number | identifier
     complex_expr = OneOrMore(Group(action + colon + expr + ZeroOrMore(connect + func_call)))
     result = complex_expr.parseString(text['code'])
     return(result)
