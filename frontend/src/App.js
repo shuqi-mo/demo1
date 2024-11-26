@@ -12,9 +12,9 @@ function App() {
   const API_URL = "http://localhost:5000";
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "long:cross(EMA(close,12),EMA(close,26))\r\nshort:cross(EMA(close,26),EMA(close,12))\r\nevaluation:period(2022-07-01,2024-07-01)"
+    // "long:must cross(EMA(close,12),EMA(close,26))\r\nshort:must cross(EMA(close,26),EMA(close,12))\r\nevaluation:period(2022-07-01,2024-07-01)"
     //  "long:cross(EMA(close,12),bolling(EMA(close,9),movingstd(close,9),2,0))\r\nshort:cross(EMA(close,12),bolling(SMA(close,9),movingstd(close,9),2,1))\r\nevaluation:constraint(2022-07-01,2024-07-01)"
-    // "long:over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:cross(EMA(close,26),close)\r\nevaluation:constraint(2022-07-01,2024-07-01)"
+    "long:must cross(EMA(close,5),low) && must over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:must cross(EMA(close,26),close)\r\nevaluation:period(2022-07-01,2024-07-01)"
   );
   const [trade, setTrade] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
@@ -50,7 +50,7 @@ function App() {
         setTrade(response.data[0]);
         setEvaluation(response.data[1]);
         // console.log(code);
-        // console.log(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);

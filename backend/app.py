@@ -45,10 +45,24 @@ def process_code():
     # print(data["code"])
     parseResult = parseCode(data)
     data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
-    buy = execute(parseResult[0][1].asList(), data_df)
-    sell = execute(parseResult[1][1].asList(), data_df)
+    longStrategyList = parseResult[0].asList()
+    shortStrategyList = parseResult[1].asList()
+    longlist = []
+    shortlist = []
+    longcondition = []    
+    shortcondition = []
+    for i in range(1,len(longStrategyList)):
+        longcondition.append(longStrategyList[i][0])
+        longlist.append(execute(longStrategyList[i][1:], data_df))
+        must_arrays, maybe_arrays, no_arrays = generate_event(longlist, longcondition)
+        long = calculate_event_result(must_arrays, maybe_arrays, no_arrays)
+    for i in range(1,len(shortStrategyList)):
+        shortcondition.append(shortStrategyList[i][0])
+        shortlist.append(execute(shortStrategyList[i][1:], data_df))
+        must_arrays, maybe_arrays, no_arrays = generate_event(shortlist, shortcondition)
+        short = calculate_event_result(must_arrays, maybe_arrays, no_arrays)
     # 数组中1表示买入，-1表示卖出
-    trade = (buy - sell).tolist()
+    trade = [a - b for a, b in zip(long, short)]
     evalRes = evaluation(parseResult[2][1].asList(), data_df, trade)
     return jsonify([trade,evalRes])
 
@@ -65,12 +79,6 @@ def cal_exampler_data():
     exampler = execute_exampler(parseResult[0][1].asList(), parseResult[1][1].asList(), data_df, trade)
     res.append(exampler)
     res.append(parseResult.asList())
-    return jsonify(res)
-
-@app.route('/backtest', methods=['POST'])
-def backtest():
-    data = request.get_json()
-    res = calBacktest(data["price"],data["tradepoint"])
     return jsonify(res)
 
 if __name__ == '__main__':
