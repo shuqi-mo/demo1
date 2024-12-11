@@ -80,55 +80,54 @@ def execute_exampler(parse_buy, parse_sell, stock, tradePoint):
 def generate_event(tradelist, condition):
     must_arrays = []
     maybe_arrays = []
-    no_arrays = []
     for i in range(len(condition)):
         if condition[i] == "must":
             must_arrays.append(tradelist[i])
         elif condition[i] == "maybe":
             maybe_arrays.append(tradelist[i])
-        elif condition[i] == "no":
-            no_arrays.append(tradelist[i])
-    return must_arrays, maybe_arrays, no_arrays
+    return must_arrays, maybe_arrays
 
-def calculate_event_result(must_arrays, maybe_arrays, no_arrays):
+def calculate_event_result(must_arrays, maybe_arrays):
     # 检查所有数组是否为空
-    if not must_arrays and not maybe_arrays and not no_arrays:
+    if not must_arrays and not maybe_arrays:
         return []
 
+    trade = 1
     # 确保输入的数组长度一致，如果数组非空
     if must_arrays:
         array_length = len(must_arrays[0])
+        for i in must_arrays[0]:
+            if i == -1:
+                trade = -1
+                break
     elif maybe_arrays:
         array_length = len(maybe_arrays[0])
-    elif no_arrays:
-        array_length = len(no_arrays[0])
+        for i in maybe_arrays[0]:
+            if i == -1:
+                trade = -1
+                break
     else:
         return []
 
     # 确保所有数组长度一致
-    assert all(len(array) == array_length for array in must_arrays + maybe_arrays + no_arrays), "Arrays must have the same length"
+    assert all(len(array) == array_length for array in must_arrays + maybe_arrays), "Arrays must have the same length"
 
     # 计算所有must状态数组的交集
     must_result = set(range(array_length))
     for array in must_arrays:
-        must_result = must_result.intersection(set([i for i, value in enumerate(array) if value == 1]))
+        must_result = must_result.intersection(set([i for i, value in enumerate(array) if value == 1 or value == -1]))
     
     # 计算所有maybe状态数组的并集
     maybe_result = set() if maybe_arrays else set(range(array_length))
     for array in maybe_arrays:
-        maybe_result.update(set([i for i, value in enumerate(array) if value == 1]))
+        maybe_result.update(set([i for i, value in enumerate(array) if value == 1 or value == -1]))
     
-    # 计算所有no状态数组的并集
-    no_result = set()
-    for array in no_arrays:
-        no_result.update(set([i for i, value in enumerate(array) if value == 1]))
-    
-    # 让交集和并集再相交一次得到最终结果，并排除no_result中的位置
-    final_result = list(must_result.intersection(maybe_result) - no_result)
+    # 让交集和并集再相交一次得到最终结果
+    final_result = list(must_result.intersection(maybe_result))
     
     # 将结果转换为一维数组形式
     final_array = [0] * array_length
     for index in final_result:
-        final_array[index] = 1
+        final_array[index] = 1 * trade
     
     return final_array

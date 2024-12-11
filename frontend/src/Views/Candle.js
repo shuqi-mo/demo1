@@ -17,7 +17,7 @@ function Candle({ data, trade }) {
       element.remove();
     }
   };
-  // console.log(trade);
+  // console.log(data);
   const n = data.data.length;
   const stackData = [];
   for (var i = 0; i < n; i++) {
@@ -290,8 +290,7 @@ function Candle({ data, trade }) {
       .append("rect")
       .attr("class", "deal")
       .attr("width", candlestickWidth)
-      .attr("height", (v) => {
-        // return yScale(0.5) * Math.abs(v["trade"]);
+      .attr("height", (v, i) => {
         return dealHeight * Math.abs(v["trade"]);
       })
       .attr("x", (v, i) => {

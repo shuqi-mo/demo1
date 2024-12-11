@@ -7,6 +7,7 @@ from strategy import *
 from parser import *
 from executer import *
 from evaluation import *
+from model import *
 
 app = Flask(__name__)
 CORS(app)
@@ -51,19 +52,44 @@ def process_code():
     shortlist = []
     longcondition = []    
     shortcondition = []
+    strategies = []
+    labels = []
     for i in range(1,len(longStrategyList)):
+        if longStrategyList[i] == "null":
+            long = [0] * (len(data_df))
+            break
         longcondition.append(longStrategyList[i][0])
-        longlist.append(execute(longStrategyList[i][1:], data_df))
-        must_arrays, maybe_arrays, no_arrays = generate_event(longlist, longcondition)
-        long = calculate_event_result(must_arrays, maybe_arrays, no_arrays)
+        if longStrategyList[i][0] == "must":
+            labels.append(1)
+        elif longStrategyList[i][0] == "maybe":
+            labels.append(0)
+        t = execute(longStrategyList[i][1:], data_df)
+        strategies.append(t)
+        longlist.append(t)
+        must_arrays, maybe_arrays = generate_event(longlist, longcondition)
+        long = calculate_event_result(must_arrays, maybe_arrays)
     for i in range(1,len(shortStrategyList)):
+        if shortStrategyList[i] == "null":
+            short = [0] * (len(data_df))
+            break
         shortcondition.append(shortStrategyList[i][0])
-        shortlist.append(execute(shortStrategyList[i][1:], data_df))
-        must_arrays, maybe_arrays, no_arrays = generate_event(shortlist, shortcondition)
-        short = calculate_event_result(must_arrays, maybe_arrays, no_arrays)
+        if shortStrategyList[i][0] == "must":
+            labels.append(1)
+        elif shortStrategyList[i][0] == "maybe":
+            labels.append(0)
+        t = execute(shortStrategyList[i][1:], data_df)
+        for j in range(len(t)):
+            if t[j] == 1:
+                t[j] = -1
+        strategies.append(t)
+        shortlist.append(t)
+        must_arrays, maybe_arrays = generate_event(shortlist, shortcondition)
+        short = calculate_event_result(must_arrays, maybe_arrays)
     # 数组中1表示买入，-1表示卖出
-    trade = [a - b for a, b in zip(long, short)]
+    trade = [a + b for a, b in zip(long, short)]
     evalRes = evaluation(parseResult[2][1].asList(), data_df, trade)
+    trade_model = train(data_df["close"],strategies,labels)
+    print(trade_model)
     return jsonify([trade,evalRes])
 
 @app.route('/cal_exampler_data', methods=['POST'])
