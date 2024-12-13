@@ -7,6 +7,7 @@ import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 import Backtest from "./Views/Backtest";
 import Upset from "./Views/Upset";
+import { Strategy } from "./utils/ClassDefinitions";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -18,6 +19,19 @@ function App() {
   const [trade, setTrade] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
+  const test1 = require("./case/test1.json");
+  // 创建策略实例并计算
+  const strategies = test1.strategies.map((strategyData) => {
+    const strategy = new Strategy(strategyData);
+    return {
+      name: strategy.name,
+      type: strategy.type,
+      computedLong: strategy.computeLong(),
+      computedShort: strategy.computeShort(),
+    };
+  });
+
+  console.log(strategies);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -49,7 +63,7 @@ function App() {
         setTrade(response.data[0]);
         setEvaluation(response.data[1]);
         // console.log(code);
-        console.log(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -77,7 +91,7 @@ function App() {
         </div>
       </div>
       <div className="right">
-        <Upset/>
+        <Upset />
         <div className="backtest">
           {data && trade && evaluation && (
             <Backtest

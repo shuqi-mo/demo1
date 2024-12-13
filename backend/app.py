@@ -88,8 +88,8 @@ def process_code():
     # 数组中1表示买入，-1表示卖出
     trade = [a + b for a, b in zip(long, short)]
     evalRes = evaluation(parseResult[2][1].asList(), data_df, trade)
-    trade_model = train(data_df["close"],strategies,labels)
-    print(trade_model)
+    # trade_model = train(data_df["close"],strategies,labels)
+    # print(trade_model)
     return jsonify([trade,evalRes])
 
 @app.route('/cal_exampler_data', methods=['POST'])
