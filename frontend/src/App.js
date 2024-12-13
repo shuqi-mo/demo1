@@ -11,27 +11,25 @@ import { Strategy } from "./utils/ClassDefinitions";
 
 function App() {
   const API_URL = "http://localhost:5000";
+  const test1 = require("./case/test1.json");
   const [data, setData] = useState(null);
   const [code, setCode] = useState(
-    "long:maybe cross(EMA(close,12),EMA(close,26)) && maybe over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:maybe cross(EMA(close,26),EMA(close,12))\r\nevaluation:period(2022-07-01,2024-07-01)"
-    // "long:must cross(low,EMA(close,5)) && must over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:null\r\nevaluation:lookahead(2)"
+    JSON.stringify(test1, null, 2)
   );
   const [trade, setTrade] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
-  const test1 = require("./case/test1.json");
   // 创建策略实例并计算
-  const strategies = test1.strategies.map((strategyData) => {
+  const strategies = JSON.parse(code).strategies.map((strategyData) => {
     const strategy = new Strategy(strategyData);
     return {
       name: strategy.name,
       type: strategy.type,
-      computedLong: strategy.computeLong(),
-      computedShort: strategy.computeShort(),
+      exprLong: strategy.exprLong(),
+      exprShort: strategy.exprShort(),
+      trade: null,
     };
   });
-
-  console.log(strategies);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -56,18 +54,62 @@ function App() {
       });
   }, []);
 
+  // 定义一个异步函数来处理每个策略的请求
+  async function processStrategies() {
+    for (let i = 0; i < strategies.length; i++) {
+      const exprLong = strategies[i].exprLong;
+      const exprShort = strategies[i].exprShort;
+
+      try {
+        // 等待axios请求完成并获取响应数据
+        const response = await axios.post(`${API_URL}/process_indicator`, {
+          exprLong,
+          exprShort,
+          selectStock,
+        });
+
+        // 将返回的data赋值给strategies[i].trade
+        strategies[i].trade = response.data;
+
+        // 打印日志以查看返回的结果
+        // console.log(`Strategy ${i} trade data:`, response.data);
+
+      } catch (error) {
+        console.error("Error for strategy " + i + ":", error);
+      }
+    }
+    var t = [];
+    for (let i = 0; i < strategies[0].trade.length; i++) {
+      var cur = 0;
+      for (let j = 0; j < strategies.length; j++) {
+        cur += strategies[j].trade[i];
+      }
+      if (cur > 0) {
+        t.push(1);
+      }
+      else if (cur < 0) {
+        t.push(-1);
+      }
+      else {
+        t.push(0);
+      }
+    }
+    setTrade(t);
+  }
+
   useEffect(() => {
-    axios
-      .post(`${API_URL}/process_code`, { code, selectStock })
-      .then((response) => {
-        setTrade(response.data[0]);
-        setEvaluation(response.data[1]);
-        // console.log(code);
-        // console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    // axios
+    //   .post(`${API_URL}/process_code`, { code, selectStock })
+    //   .then((response) => {
+    //     setTrade(response.data[0]);
+    //     setEvaluation(response.data[1]);
+    //     // console.log(code);
+    //     // console.log(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error:", error);
+    //   });
+    processStrategies();
   }, [selectStock, code]);
 
   return (
@@ -91,7 +133,7 @@ function App() {
         </div>
       </div>
       <div className="right">
-        <Upset />
+        {/* <Upset /> */}
         <div className="backtest">
           {data && trade && evaluation && (
             <Backtest

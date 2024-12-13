@@ -34,7 +34,7 @@ class Strategy {
   }
 
   // 计算 long 和 short 的方法
-  computeLong() {
+  exprLong() {
     // 根据类中存储的变量来动态计算long
     return this.long.replace(/(\w+)/g, (match) => {
       // 替换变量为对应的值
@@ -45,7 +45,7 @@ class Strategy {
     });
   }
 
-  computeShort() {
+  exprShort() {
     // 根据类中存储的变量来动态计算short
     return this.short.replace(/(\w+)/g, (match) => {
       // 替换变量为对应的值

@@ -1,7 +1,17 @@
 import numpy as np
 
 def cross(short, long):
-    n = len(short)
+    # 确保short和long都是numpy数组
+    short = np.asarray(short)
+    long = np.asarray(long)
+    
+    # 如果short或long是单个数字，将其转换为长度相同的数组
+    if short.ndim == 0:  # 如果short是单个数字
+        short = np.full_like(long, short)
+    if long.ndim == 0:  # 如果long是单个数字
+        long = np.full_like(short, long)
+    
+    n = max(len(short), len(long))  # 确保n是较长数组的长度
     trade = np.zeros(n)
     for i in range(n-1):
         if long[i] == 0:

@@ -40,6 +40,15 @@ def update_single_stock_data():
     res["data"] = stock
     return jsonify(res)
 
+@app.route('/process_indicator', methods=['POST'])
+def process_indicator():
+    data = request.get_json()
+    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
+    long = execute_expr(data["exprLong"], data_df)
+    short = execute_expr(data["exprShort"], data_df)
+    trade = long - short
+    return jsonify(list(trade))
+
 @app.route('/process_code', methods=['POST'])
 def process_code():
     data = request.get_json()
