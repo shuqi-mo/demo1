@@ -6,16 +6,13 @@ import "./App.scss";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 import Backtest from "./Views/Backtest";
-import Upset from "./Views/Upset";
 import { Strategy } from "./utils/ClassDefinitions";
 
 function App() {
   const API_URL = "http://localhost:5000";
   const test1 = require("./case/test1.json");
   const [data, setData] = useState(null);
-  const [code, setCode] = useState(
-    JSON.stringify(test1, null, 2)
-  );
+  const [code, setCode] = useState(JSON.stringify(test1, null, 2));
   const [trade, setTrade] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
@@ -24,7 +21,6 @@ function App() {
     const strategy = new Strategy(strategyData);
     return {
       name: strategy.name,
-      type: strategy.type,
       exprLong: strategy.exprLong(),
       exprShort: strategy.exprShort(),
       trade: null,
@@ -73,7 +69,6 @@ function App() {
 
         // 打印日志以查看返回的结果
         // console.log(`Strategy ${i} trade data:`, response.data);
-
       } catch (error) {
         console.error("Error for strategy " + i + ":", error);
       }
@@ -86,11 +81,9 @@ function App() {
       }
       if (cur > 0) {
         t.push(1);
-      }
-      else if (cur < 0) {
+      } else if (cur < 0) {
         t.push(-1);
-      }
-      else {
+      } else {
         t.push(0);
       }
     }
@@ -98,17 +91,6 @@ function App() {
   }
 
   useEffect(() => {
-    // axios
-    //   .post(`${API_URL}/process_code`, { code, selectStock })
-    //   .then((response) => {
-    //     setTrade(response.data[0]);
-    //     setEvaluation(response.data[1]);
-    //     // console.log(code);
-    //     // console.log(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //   });
     processStrategies();
   }, [selectStock, code]);
 
@@ -123,17 +105,6 @@ function App() {
             <Candle data={data} trade={trade} />
           </div>
         )}
-        <div className="editor">
-          <CodeEditor
-            code={code}
-            onCodeChange={updateCode}
-            selectStock={selectStock}
-            stock={data}
-          />
-        </div>
-      </div>
-      <div className="right">
-        {/* <Upset /> */}
         <div className="backtest">
           {data && trade && evaluation && (
             <Backtest
@@ -142,6 +113,14 @@ function App() {
               evaluation={evaluation}
             />
           )}
+        </div>
+      </div>
+      <div className="right">
+        <div className="editor">
+          <CodeEditor
+            code={code}
+            onCodeChange={updateCode}
+          />
         </div>
       </div>
     </div>

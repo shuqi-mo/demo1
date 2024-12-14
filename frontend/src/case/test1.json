@@ -1,35 +1,29 @@
 {
-    "strategies": [
-      {
-        "name": "MACD",
-        "type": "trend",
-        "shortterm": "EMA(close, 12)",
-        "longterm": "EMA(close, 26)",
-        "long": "cross(shortterm, longterm)",
-        "short": "cross(longterm, shortterm)"
-      },
-      {
-        "name": "rsi",
-        "type": "TRB",
-        "price": "rsi(close, 14)",
-        "up": 70,
-        "down": 30,
-        "long": "cross(price, down)",
-        "short": "cross(up, price)",
-        "longstop": "cross(down, price)",
-        "shortstop": "cross(price, up)"
-      },
-      {
-        "name": "boll",
-        "type": "TRB",
-        "price": "EMA(close, 9)",
-        "band": "movingstd(price, 9)",
-        "multiplier": 2,
-        "up": "price + multiplier * band",
-        "down": "price - multiplier * band",
-        "long": "cross(price, down)",
-        "short": "cross(up, price)"
-      }
-    ]
-  }
-  
+  "strategies": [
+    {
+      "name": "MACD",
+      "shortterm": "EMA(close, 12)",
+      "longterm": "EMA(close, 26)",
+      "long": "cross(shortterm, longterm)",
+      "short": "cross(longterm, shortterm)"
+    },
+    {
+      "name": "rsi",
+      "price": "rsi(close, 14)",
+      "up": 70,
+      "down": 30,
+      "long": "cross(price, down)",
+      "short": "cross(up, price)"
+    },
+    {
+      "name": "boll",
+      "price": "EMA(close, 9)",
+      "band": "movingstd(price, 9)",
+      "multiplier": 2,
+      "up": "price + multiplier * band",
+      "down": "price - multiplier * band",
+      "long": "cross(price, down)",
+      "short": "cross(up, price)"
+    }
+  ]
+}

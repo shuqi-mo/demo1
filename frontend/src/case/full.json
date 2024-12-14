@@ -2,20 +2,17 @@
   "strategies": [
     {
       "name": "BarUpDn",
-      "type": "trend",
       "long": "over(close, open, close[1])",
       "short": "over(close[1], open, close)"
     },
     {
       "name": "InSide Bar",
-      "type": "trend",
       "prerequisite": "high < high[1] && low > low[1]",
       "long": "close > open",
       "short": "close < open"
     },
     {
       "name": "MACD",
-      "type": "trend",
       "shortterm": "EMA(close, 12)",
       "longterm": "EMA(close, 26)",
       "long": "cross(shortterm, longterm)",
@@ -23,7 +20,6 @@
     },
     {
       "name": "rsi",
-      "type": "TRB",
       "price": "rsi(14)",
       "up": 70,
       "down": 30,
@@ -34,7 +30,6 @@
     },
     {
       "name": "boll",
-      "type": "TRB",
       "price": "EMA(close, 9)",
       "band": "dev(price)",
       "multiplier": 2,
@@ -46,7 +41,7 @@
       "shortstop": "cross(price, up)"
     }
   ],
-  "environment": [
+  "restrictions": [
     {
       "long": [
         "over(30, rsi)",
@@ -56,8 +51,5 @@
     { "short": ["over(rsi, 70)"] }
   ],
   "evaluation": {}
+  
 }
-
-// 原来的中间语法
-"long:maybe cross(EMA(close,12),EMA(close,26)) && maybe over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:maybe cross(EMA(close,26),EMA(close,12))\r\nevaluation:period(2022-07-01,2024-07-01)"
-"long:must cross(low,EMA(close,5)) && must over(EMA(close,5),EMA(close,10),EMA(close,20),EMA(close,30))\r\nshort:null\r\nevaluation:lookahead(2)"

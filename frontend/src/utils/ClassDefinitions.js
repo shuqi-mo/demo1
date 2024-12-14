@@ -10,7 +10,7 @@ class Strategy {
 
     // 预处理变量：首先处理所有的中间变量
     for (let key in data) {
-      if (!["name", "type", "long", "short"].includes(key)) {
+      if (!["name", "long", "short"].includes(key)) {
         // 对变量的表达式进行预替换，确保它们能正确展开
         this.variables[key] = this.preprocessVariable(data[key]);
       }
