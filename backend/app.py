@@ -4,10 +4,8 @@ import pandas as pd
 import numpy as np
 from indicator import *
 from strategy import *
-from parser import *
 from executer import *
 from evaluation import *
-from model import *
 
 app = Flask(__name__)
 CORS(app)
