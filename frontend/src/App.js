@@ -17,7 +17,7 @@ function App() {
   const [evaluation, setEvaluation] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
   // 创建策略实例并计算
-  const strategies = JSON.parse(code).strategies.map((strategyData) => {
+  const strategies = JSON.parse(code).indicators.map((strategyData) => {
     const strategy = new Strategy(strategyData);
     return {
       name: strategy.name,

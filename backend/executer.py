@@ -9,7 +9,7 @@ def execute_expr(expr, stock):
         def replace_keywords(match):
             keyword = match.group(0)
             if keyword in stock_df.columns:
-                return f"stock['{keyword}']"
+                return f"CustomList(list(stock['{keyword}']))"
             return keyword
         
         # 替换表达式中的close, open, high, low等为stock["close"], stock["open"]等
@@ -18,7 +18,7 @@ def execute_expr(expr, stock):
         # 处理带索引的关键字（[n]）
         def replace_indexed_keywords(match):
             n = int(match.group(1)) if match.group(1) else 0  # 提取n值
-            return f".shift({n}, fill_value=-1)"
+            return f".shift({n}, fill_value=0)"
     
         # 匹配 [n] 格式并替换
         processed_expression = re.sub(r'\[(\d+)\]', replace_indexed_keywords, processed_expression)
@@ -26,5 +26,7 @@ def execute_expr(expr, stock):
         return processed_expression
 
     processed_expression = preprocess_expression(expr, stock)
+    print(processed_expression)
     res = eval(processed_expression)
+    # print(res)
     return np.array(res)

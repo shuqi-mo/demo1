@@ -44,8 +44,11 @@ def process_indicator():
     data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
     long = execute_expr(data["exprLong"], data_df)
     short = execute_expr(data["exprShort"], data_df)
+    long = CustomList(long)
+    short = CustomList(short)
     trade = long - short
-    return jsonify(list(trade))
+    float_trade = [float(x) for x in trade]
+    return jsonify(float_trade)
 
 if __name__ == '__main__':
     app.run()
