@@ -3,8 +3,7 @@ from flask_cors import CORS
 import pandas as pd
 import numpy as np
 from indicator import *
-from strategy import *
-from executer import *
+from process import *
 from evaluation import *
 
 app = Flask(__name__)
@@ -46,9 +45,18 @@ def process_indicator():
     short = execute_expr(data["exprShort"], data_df)
     long = CustomList(long)
     short = CustomList(short)
-    trade = long - short
+    trade = process_trades(long, short)
     float_trade = [float(x) for x in trade]
     return jsonify(float_trade)
+
+@app.route('/process_evaluation', methods=['POST'])
+def process_evaluation():
+    data = request.get_json()
+    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
+    price, trade = updatePeriod(data_df, data["tradeSeq"], data["startDate"], data["endDate"])
+    res = calBacktest(price, trade, data["getAheadStopTime"])
+    print(res)
+    return {}
 
 if __name__ == '__main__':
     app.run()

@@ -1,4 +1,11 @@
-from datetime import datetime, timedelta
+import pandas as pd
+
+def updatePeriod(stock, trade_origin, startDate=None, endDate=None):
+    trade_origin = pd.Series(trade_origin)
+    mask = (stock['trade_date'] >= startDate) & (stock['trade_date'] <= endDate)
+    price = stock[mask]["close"].reset_index(drop=True)
+    trade = trade_origin[mask].reset_index(drop=True)
+    return price, trade
 
 def calBacktest(price, trade, ahead = -1):
     success = []
@@ -22,6 +29,8 @@ def calBacktest(price, trade, ahead = -1):
                         profitpent.append((price[j]-price[i])/price[i])
                         break
             else:
+                if i + ahead >= len(trade):
+                    break
                 if price[i] < price[i+ahead]:
                     success.append(1)
                 else:
@@ -43,6 +52,8 @@ def calBacktest(price, trade, ahead = -1):
                         profitpent.append((price[i]-price[j])/price[i])
                         break
             else:
+                if i + ahead >= len(trade):
+                    break
                 if price[i] > price[i+ahead]:
                     success.append(1)
                 else:
@@ -51,22 +62,3 @@ def calBacktest(price, trade, ahead = -1):
                 profit.append(totalprofit)
                 profitpent.append((price[i]-price[i+ahead])/price[i])
     return [success,profit,profitpent]
-
-def evaluation(parse, stock, trade):
-    if parse[0] == "period":
-        format = "%Y-%m-%d"
-        start = datetime.strptime(parse[1][0],format)
-        end = datetime.strptime(parse[1][1],format)
-        s = 0
-        e = len(stock["trade_date"])-1
-        current = datetime.strptime(stock["trade_date"][s],format)
-        while(current < start):
-            s += 1
-            current = datetime.strptime(stock["trade_date"][s],format)
-        current = datetime.strptime(stock["trade_date"][e],format)
-        while(current > end):
-            e -= 1
-            current = datetime.strptime(stock["trade_date"][e],format)
-        return calBacktest(list(stock["close"][s:e+1]), trade[s:e+1])
-    elif parse[0] == "lookahead":
-        return calBacktest(stock["close"], trade, int(parse[1]))

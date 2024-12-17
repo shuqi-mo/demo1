@@ -1,4 +1,4 @@
-class Strategy {
+class Indicator {
   constructor(data) {
     this.name = data.name;
     this.type = data.type;
@@ -57,4 +57,37 @@ class Strategy {
   }
 }
 
-export { Strategy };
+class Evaluation {
+  constructor(period, stopConditions) {
+    this.startDate = period[0]; // 评估开始日期
+    this.endDate = period[1]; // 评估结束日期
+    this.stopConditions = stopConditions; // 包含止损、止盈和提前停止条件的数组
+  }
+  // 获取止损阈值（负值表示止损，正值表示止盈）
+  getStopLossThreshold() {
+    const lossCondition = this.stopConditions.find(condition => condition.loss);
+    return lossCondition ? parseFloat(lossCondition.loss) : null;
+  }
+
+  // 获取止盈阈值（百分比）
+  getTakeProfitThreshold() {
+    const gainCondition = this.stopConditions.find(condition => condition.gain);
+    return gainCondition ? parseFloat(gainCondition.gain) : null;
+  }
+
+  // 获取提前停止的时间（如果有）
+  getAheadStopTime() {
+    const aheadCondition = this.stopConditions.find(condition => condition.ahead);
+    return aheadCondition ? parseInt(aheadCondition.ahead) : null;
+  }
+
+   // 打印评估信息
+   printEvaluationInfo() {
+    console.log(`Evaluation Period: ${this.startDate} to ${this.endDate}`);
+    console.log(`Stop Loss Threshold: ${this.getStopLossThreshold()}%`);
+    console.log(`Take Profit Threshold: ${this.getTakeProfitThreshold()}%`);
+    console.log(`Ahead Stop Time: ${this.getAheadStopTime()} days`);
+  }
+}
+
+export { Indicator, Evaluation };

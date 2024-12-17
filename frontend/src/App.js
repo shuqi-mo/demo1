@@ -6,7 +6,7 @@ import "./App.scss";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 import Backtest from "./Views/Backtest";
-import { Strategy } from "./utils/ClassDefinitions";
+import { Indicator, Evaluation } from "./utils/ClassDefinitions";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -14,18 +14,27 @@ function App() {
   const [data, setData] = useState(null);
   const [code, setCode] = useState(JSON.stringify(test1, null, 2));
   const [trade, setTrade] = useState(null);
-  const [evaluation, setEvaluation] = useState(null);
+  const [evaluationold, setEvaluationold] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
   // 创建策略实例并计算
-  const strategies = JSON.parse(code).indicators.map((strategyData) => {
-    const strategy = new Strategy(strategyData);
+  const indicators = JSON.parse(code).indicators.map((strategyData) => {
+    const indicator = new Indicator(strategyData);
     return {
-      name: strategy.name,
-      exprLong: strategy.exprLong(),
-      exprShort: strategy.exprShort(),
+      name: indicator.name,
+      exprLong: indicator.exprLong(),
+      exprShort: indicator.exprShort(),
       trade: null,
+      success: null,
+      singlereturn: null,
+      totalprofit: null,
     };
   });
+
+  // 示例 JSON 数据
+  const evaluationData = JSON.parse(code).evaluation;
+
+  // 创建 Evaluation 实例
+  const evaluation = new Evaluation(evaluationData.period, evaluationData.stop);
 
   const updateValue = (newValue) => {
     setData(newValue);
@@ -52,20 +61,30 @@ function App() {
 
   // 定义一个异步函数来处理每个策略的请求
   async function processStrategies() {
-    for (let i = 0; i < strategies.length; i++) {
-      const exprLong = strategies[i].exprLong;
-      const exprShort = strategies[i].exprShort;
+    const startDate = evaluation.startDate;
+    const endDate = evaluation.endDate;
+    const getStopLossThreshold = evaluation.getStopLossThreshold();
+    const getTakeProfitThreshold = evaluation.getTakeProfitThreshold();
+    const getAheadStopTime = evaluation.getAheadStopTime();
+    for (let i = 0; i < indicators.length; i++) {
+      const exprLong = indicators[i].exprLong;
+      const exprShort = indicators[i].exprShort;
 
       try {
         // 等待axios请求完成并获取响应数据
         const response = await axios.post(`${API_URL}/process_indicator`, {
           exprLong,
           exprShort,
+          startDate,
+          endDate,
+          getStopLossThreshold,
+          getTakeProfitThreshold,
+          getAheadStopTime,
           selectStock,
         });
 
-        // 将返回的data赋值给strategies[i].trade
-        strategies[i].trade = response.data;
+        // 将返回的data赋值给indicators[i].trade
+        indicators[i].trade = response.data;
 
         // 打印日志以查看返回的结果
         // console.log(`Strategy ${i} trade data:`, response.data);
@@ -74,10 +93,10 @@ function App() {
       }
     }
     var t = [];
-    for (let i = 0; i < strategies[0].trade.length; i++) {
+    for (let i = 0; i < indicators[0].trade.length; i++) {
       var cur = 0;
-      for (let j = 0; j < strategies.length; j++) {
-        cur += strategies[j].trade[i];
+      for (let j = 0; j < indicators.length; j++) {
+        cur += indicators[j].trade[i];
       }
       if (cur > 0) {
         t.push(1);
@@ -88,10 +107,41 @@ function App() {
       }
     }
     setTrade(t);
+    processEvaluation();
+  }
+
+  async function processEvaluation() {
+    const startDate = evaluation.startDate;
+    const endDate = evaluation.endDate;
+    const getStopLossThreshold = evaluation.getStopLossThreshold();
+    const getTakeProfitThreshold = evaluation.getTakeProfitThreshold();
+    const getAheadStopTime = evaluation.getAheadStopTime();
+
+    for (let i = 0; i < indicators.length; i++) {
+      const tradeSeq = indicators[i].trade;
+      try {
+        // 等待axios请求完成并获取响应数据
+        const response = await axios.post(`${API_URL}/process_evaluation`, {
+          startDate,
+          endDate,
+          getStopLossThreshold,
+          getTakeProfitThreshold,
+          getAheadStopTime,
+          tradeSeq,
+          selectStock,
+        });
+        // 打印日志以查看返回的结果
+        // console.log(`Strategy ${i} trade data:`, response.data);
+      } catch (error) {
+        console.error("Error for strategy " + i + ":", error);
+      }
+    }
   }
 
   useEffect(() => {
     processStrategies();
+    // 打印评估信息
+    evaluation.printEvaluationInfo();
   }, [selectStock, code]);
 
   return (
@@ -106,21 +156,18 @@ function App() {
           </div>
         )}
         <div className="backtest">
-          {data && trade && evaluation && (
+          {data && trade && evaluationold && (
             <Backtest
               stock={data["data"]}
               trade={trade}
-              evaluation={evaluation}
+              evaluation={evaluationold}
             />
           )}
         </div>
       </div>
       <div className="right">
         <div className="editor">
-          <CodeEditor
-            code={code}
-            onCodeChange={updateCode}
-          />
+          <CodeEditor code={code} onCodeChange={updateCode} />
         </div>
       </div>
     </div>
