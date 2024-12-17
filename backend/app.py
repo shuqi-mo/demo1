@@ -55,8 +55,7 @@ def process_evaluation():
     data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
     price, trade = updatePeriod(data_df, data["tradeSeq"], data["startDate"], data["endDate"])
     res = calBacktest(price, trade, data["getAheadStopTime"])
-    print(res)
-    return {}
+    return jsonify(res)
 
 if __name__ == '__main__':
     app.run()

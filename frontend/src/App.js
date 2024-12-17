@@ -5,8 +5,8 @@ import Candle from "./Views/Candle";
 import "./App.scss";
 import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
-import Backtest from "./Views/Backtest";
 import { Indicator, Evaluation } from "./utils/ClassDefinitions";
+import IndicatorsTable from "./Views/IndicatorsTable";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -14,8 +14,9 @@ function App() {
   const [data, setData] = useState(null);
   const [code, setCode] = useState(JSON.stringify(test1, null, 2));
   const [trade, setTrade] = useState(null);
-  const [evaluationold, setEvaluationold] = useState(null);
+  const [backtest, setBacktest] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
+
   // 创建策略实例并计算
   const indicators = JSON.parse(code).indicators.map((strategyData) => {
     const indicator = new Indicator(strategyData);
@@ -30,7 +31,6 @@ function App() {
     };
   });
 
-  // 示例 JSON 数据
   const evaluationData = JSON.parse(code).evaluation;
 
   // 创建 Evaluation 实例
@@ -61,11 +61,6 @@ function App() {
 
   // 定义一个异步函数来处理每个策略的请求
   async function processStrategies() {
-    const startDate = evaluation.startDate;
-    const endDate = evaluation.endDate;
-    const getStopLossThreshold = evaluation.getStopLossThreshold();
-    const getTakeProfitThreshold = evaluation.getTakeProfitThreshold();
-    const getAheadStopTime = evaluation.getAheadStopTime();
     for (let i = 0; i < indicators.length; i++) {
       const exprLong = indicators[i].exprLong;
       const exprShort = indicators[i].exprShort;
@@ -75,11 +70,6 @@ function App() {
         const response = await axios.post(`${API_URL}/process_indicator`, {
           exprLong,
           exprShort,
-          startDate,
-          endDate,
-          getStopLossThreshold,
-          getTakeProfitThreshold,
-          getAheadStopTime,
           selectStock,
         });
 
@@ -92,6 +82,7 @@ function App() {
         console.error("Error for strategy " + i + ":", error);
       }
     }
+    processEvaluation();
     var t = [];
     for (let i = 0; i < indicators[0].trade.length; i++) {
       var cur = 0;
@@ -107,7 +98,6 @@ function App() {
       }
     }
     setTrade(t);
-    processEvaluation();
   }
 
   async function processEvaluation() {
@@ -130,18 +120,26 @@ function App() {
           tradeSeq,
           selectStock,
         });
-        // 打印日志以查看返回的结果
-        // console.log(`Strategy ${i} trade data:`, response.data);
+        indicators[i].success = response.data[0];
+        indicators[i].totalprofit = response.data[1];
+        indicators[i].singlereturn = response.data[2];
       } catch (error) {
         console.error("Error for strategy " + i + ":", error);
       }
     }
+    // 提取 indicators 中的必要字段并更新 backtest
+    const newBacktest = indicators.map((indicator) => ({
+      name: indicator.name,
+      success: indicator.success,
+      singlereturn: indicator.singlereturn,
+      totalprofit: indicator.totalprofit,
+    }));
+
+    setBacktest(newBacktest); // 更新 backtest 状态
   }
 
   useEffect(() => {
     processStrategies();
-    // 打印评估信息
-    evaluation.printEvaluationInfo();
   }, [selectStock, code]);
 
   return (
@@ -150,20 +148,16 @@ function App() {
         <Panel onUpdateValue={updateValue} onUpdateStock={updateStock} />
       </div>
       <div className="timeselector">
-        {data && trade && (
+        {trade && (
           <div className="candle">
             <Candle data={data} trade={trade} />
           </div>
         )}
-        <div className="backtest">
-          {data && trade && evaluationold && (
-            <Backtest
-              stock={data["data"]}
-              trade={trade}
-              evaluation={evaluationold}
-            />
-          )}
-        </div>
+        {backtest && (
+          <div style={{ padding: "20px" }}>
+            <IndicatorsTable indicators={backtest} />
+          </div>
+        )}
       </div>
       <div className="right">
         <div className="editor">

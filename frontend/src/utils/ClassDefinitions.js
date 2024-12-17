@@ -80,14 +80,6 @@ class Evaluation {
     const aheadCondition = this.stopConditions.find(condition => condition.ahead);
     return aheadCondition ? parseInt(aheadCondition.ahead) : null;
   }
-
-   // 打印评估信息
-   printEvaluationInfo() {
-    console.log(`Evaluation Period: ${this.startDate} to ${this.endDate}`);
-    console.log(`Stop Loss Threshold: ${this.getStopLossThreshold()}%`);
-    console.log(`Take Profit Threshold: ${this.getTakeProfitThreshold()}%`);
-    console.log(`Ahead Stop Time: ${this.getAheadStopTime()} days`);
-  }
 }
 
 export { Indicator, Evaluation };
