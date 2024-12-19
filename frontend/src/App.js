@@ -7,6 +7,8 @@ import Panel from "./Views/Panel";
 import CodeEditor from "./Views/CodeEditor";
 import { Indicator, Evaluation } from "./utils/ClassDefinitions";
 import IndicatorsTable from "./Views/IndicatorsTable";
+import { Button } from "antd";
+import StocksTable from "./Views/StocksTable";
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -16,7 +18,8 @@ function App() {
   const [trade, setTrade] = useState(null);
   const [backtest, setBacktest] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
-  const [stockList, setStockList] = useState(null);
+  const [stockList, setStockList] = useState(["600893.SH"]);
+  const [stockPerformance, setStockPerformance] = useState([]);
 
   // 创建策略实例并计算
   const indicators = JSON.parse(code).indicators.map((strategyData) => {
@@ -49,6 +52,7 @@ function App() {
     setCode(newValue);
   };
 
+  // 更新股票清单和选中股票
   useEffect(() => {
     axios
       .get(`${API_URL}/get_stock_data`)
@@ -69,18 +73,19 @@ function App() {
       });
   }, []);
 
-  // 定义一个异步函数来处理每个策略的请求
+  // 计算指标交易序列
   async function processStrategies() {
     for (let i = 0; i < indicators.length; i++) {
       const exprLong = indicators[i].exprLong;
       const exprShort = indicators[i].exprShort;
+      const stock = selectStock;
 
       try {
         // 等待axios请求完成并获取响应数据
         const response = await axios.post(`${API_URL}/process_indicator`, {
           exprLong,
           exprShort,
-          selectStock,
+          stock,
         });
 
         // 将返回的data赋值给indicators[i].trade
@@ -110,15 +115,17 @@ function App() {
     setTrade(t);
   }
 
+  // 计算指标收益
   async function processEvaluation() {
     const startDate = evaluation.startDate;
     const endDate = evaluation.endDate;
     const getStopLossThreshold = evaluation.getStopLossThreshold();
     const getTakeProfitThreshold = evaluation.getTakeProfitThreshold();
     const getAheadStopTime = evaluation.getAheadStopTime();
+    const stock = selectStock;
 
     for (let i = 0; i < indicators.length; i++) {
-      const tradeSeq = indicators[i].trade;
+      const singleTrade = indicators[i].trade;
       try {
         // 等待axios请求完成并获取响应数据
         const response = await axios.post(`${API_URL}/process_evaluation`, {
@@ -127,8 +134,8 @@ function App() {
           getStopLossThreshold,
           getTakeProfitThreshold,
           getAheadStopTime,
-          tradeSeq,
-          selectStock,
+          singleTrade,
+          stock,
         });
         indicators[i].success = response.data[0];
         indicators[i].totalprofit = response.data[1];
@@ -148,16 +155,100 @@ function App() {
     setBacktest(newBacktest); // 更新 backtest 状态
   }
 
+  // 更新股票交易序列
+  async function calculateTradeForStock(stock) {
+    var tradeSeq = [];
+    for (let i = 0; i < indicators.length; i++) {
+      const exprLong = indicators[i].exprLong;
+      const exprShort = indicators[i].exprShort;
+      try {
+        // 等待axios请求完成并获取响应数据
+        const response = await axios.post(`${API_URL}/process_indicator`, {
+          exprLong,
+          exprShort,
+          stock,
+        });
+        tradeSeq.push(response.data);
+      } catch (error) {
+        console.error("Error for strategy " + i + ":", error);
+      }
+    }
+    return {
+      stock,
+      tradeSeq,
+    };
+  }
+
+  // 更新股票收益
+  async function calculatePerformanceForStock(stock) {
+    const res_trade = await calculateTradeForStock(stock);
+    const tradeSeq = res_trade["tradeSeq"];
+    const startDate = evaluation.startDate;
+    const endDate = evaluation.endDate;
+    const getStopLossThreshold = evaluation.getStopLossThreshold();
+    const getTakeProfitThreshold = evaluation.getTakeProfitThreshold();
+    const getAheadStopTime = evaluation.getAheadStopTime();
+
+    let success = [];
+    let totalprofit = [];
+    let singlereturn = [];
+
+    for (let i = 0; i < tradeSeq.length; i++) {
+      const singleTrade = tradeSeq[i];
+      try {
+        const response = await axios.post(`${API_URL}/process_evaluation`, {
+          startDate,
+          endDate,
+          getStopLossThreshold,
+          getTakeProfitThreshold,
+          getAheadStopTime,
+          singleTrade,
+          stock,
+        });
+        success.push(response.data[0]);
+        totalprofit.push(response.data[1]);
+        singlereturn.push(response.data[2]);
+      } catch (error) {
+        console.error("Error processing evaluation for stock", stock, error);
+      }
+    }
+    return {
+      stock,
+      success,
+      singlereturn,
+      totalprofit
+    };
+  }
+
   useEffect(() => {
     processStrategies();
   }, [selectStock, code]);
 
+  async function calculateStockPerformance() {
+    const performanceData = [];
+
+    for (let stock of stockList) {
+      const performance = await calculatePerformanceForStock(stock);
+      console.log(performance);
+      performanceData.push(performance);
+    }
+
+    setStockPerformance(performanceData);
+  }
+
+  const handleExecute = async () => {
+    await calculateStockPerformance();
+    console.log("Updated stock performance for all stocks");
+  };
+
   return (
     <div>
       <div className="panel">
-        {stockList && (
-          <Panel stockList={stockList} onUpdateValue={updateValue} onUpdateStock={updateStock} />
-        )}
+        <Panel
+          stockList={stockList}
+          onUpdateValue={updateValue}
+          onUpdateStock={updateStock}
+        />
       </div>
       <div className="timeselector">
         {trade && (
@@ -168,6 +259,10 @@ function App() {
         {backtest && (
           <div style={{ padding: "20px" }}>
             <IndicatorsTable indicators={backtest} />
+            <Button type="primary" onClick={() => handleExecute()}>
+              Update for stocklist
+            </Button>
+            <StocksTable stocks={stockPerformance}/>
           </div>
         )}
       </div>

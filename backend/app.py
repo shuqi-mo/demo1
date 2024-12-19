@@ -51,7 +51,7 @@ def update_single_stock_data():
 @app.route('/process_indicator', methods=['POST'])
 def process_indicator():
     data = request.get_json()
-    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
+    data_df = pd.read_csv(file_path + data["stock"] + ".csv")
     long = execute_expr(data["exprLong"], data_df)
     short = execute_expr(data["exprShort"], data_df)
     long = CustomList(long)
@@ -63,8 +63,8 @@ def process_indicator():
 @app.route('/process_evaluation', methods=['POST'])
 def process_evaluation():
     data = request.get_json()
-    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
-    price, trade = updatePeriod(data_df, data["tradeSeq"], data["startDate"], data["endDate"])
+    data_df = pd.read_csv(file_path + data["stock"] + ".csv")
+    price, trade = updatePeriod(data_df, data["singleTrade"], data["startDate"], data["endDate"])
     res = calBacktest(price, trade, data["getAheadStopTime"])
     return jsonify(res)
 

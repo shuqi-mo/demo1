@@ -33,7 +33,7 @@ const IndicatorsTable = ({ indicators }) => {
       title: "Total Profit",
       dataIndex: "totalProfit",
       key: "totalProfit",
-      render: (totalProfit) => totalProfit.toFixed(4),
+      render: (totalProfit) => totalProfit.toFixed(2),
       sorter: (a, b) => a.totalProfit - b.totalProfit, // 按照总利润排序
     },
   ];
