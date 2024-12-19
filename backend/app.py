@@ -12,18 +12,18 @@ CORS(app)
 
 file_path = "static/data/"
 file_name = "600893.SH.csv"
+csv_files = []
+# 遍历data文件夹中的文件
+for file_name in os.listdir(file_path):
+    # 检查文件是否以.csv结尾
+    if file_name.endswith('.csv'):
+        csv_files.append(file_name[:9])
 
 data_df = pd.read_csv(file_path + file_name)
 app.secret_key = 'secret_key'
 
 @app.route('/get_stock_list')
 def get_stock_list():
-    csv_files = []
-    # 遍历data文件夹中的文件
-    for file_name in os.listdir(file_path):
-        # 检查文件是否以.csv结尾
-        if file_name.endswith('.csv'):
-            csv_files.append(file_name[:9])
     return jsonify(csv_files)
 
 @app.route('/get_stock_data')
@@ -48,24 +48,46 @@ def update_single_stock_data():
     res["data"] = stock
     return jsonify(res)
 
-@app.route('/process_indicator', methods=['POST'])
-def process_indicator():
+@app.route('/process_single_stock', methods=['POST'])
+def process_single_stock():
     data = request.get_json()
-    data_df = pd.read_csv(file_path + data["stock"] + ".csv")
-    long = execute_expr(data["exprLong"], data_df)
-    short = execute_expr(data["exprShort"], data_df)
-    long = CustomList(long)
-    short = CustomList(short)
-    trade = process_trades(long, short)
-    float_trade = [float(x) for x in trade]
-    return jsonify(float_trade)
+    data_df = pd.read_csv(file_path + data["selectStock"] + ".csv")
+    float_trade = []
+    performance = []
+    for i in range(len(data["indicatorName"])):
+        name = data["indicatorName"][i]
+        long = execute_expr(data["exprLongList"][i], data_df)
+        short = execute_expr(data["exprShortList"][i], data_df)
+        long = CustomList(long)
+        short = CustomList(short)
+        trade_origin = process_trades(long, short)
+        float_trade.append([float(x) for x in trade_origin])
+        price, trade = updatePeriod(data_df, trade_origin, data["startDate"], data["endDate"])
+        res = calBacktest(price, trade, data["getAheadStopTime"])
+        performance.append([name, res[0], res[1], res[2]])
+    return jsonify([float_trade, performance])
 
-@app.route('/process_evaluation', methods=['POST'])
-def process_evaluation():
+@app.route('/process_stocks', methods=['POST'])
+def process_stocks():
     data = request.get_json()
-    data_df = pd.read_csv(file_path + data["stock"] + ".csv")
-    price, trade = updatePeriod(data_df, data["singleTrade"], data["startDate"], data["endDate"])
-    res = calBacktest(price, trade, data["getAheadStopTime"])
+    res = []
+    for item in csv_files:
+        stock = pd.read_csv(file_path + item + ".csv")
+        totalSuccess = []
+        totalProfit = []
+        totalReturn = []
+        for i in range(len(data["exprLongList"])):
+            long = execute_expr(data["exprLongList"][i], stock)
+            short = execute_expr(data["exprShortList"][i], stock)
+            long = CustomList(long)
+            short = CustomList(short)
+            trade_origin = process_trades(long, short)
+            price, trade = updatePeriod(stock, trade_origin, data["startDate"], data["endDate"])
+            res_singlestock = calBacktest(price, trade, data["getAheadStopTime"])
+            totalSuccess.append(res_singlestock[0])
+            totalProfit.append(res_singlestock[1])
+            totalReturn.append(res_singlestock[2])
+        res.append([item, totalSuccess, totalProfit, totalReturn])
     return jsonify(res)
 
 if __name__ == '__main__':
