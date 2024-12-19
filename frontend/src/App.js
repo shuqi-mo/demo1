@@ -16,6 +16,7 @@ function App() {
   const [trade, setTrade] = useState(null);
   const [backtest, setBacktest] = useState(null);
   const [selectStock, setSelectStock] = useState("600893.SH");
+  const [stockList, setStockList] = useState(null);
 
   // 创建策略实例并计算
   const indicators = JSON.parse(code).indicators.map((strategyData) => {
@@ -53,6 +54,15 @@ function App() {
       .get(`${API_URL}/get_stock_data`)
       .then((response) => {
         setData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    axios
+      .get(`${API_URL}/get_stock_list`)
+      .then((response) => {
+        // setData(response.data);
+        setStockList(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -145,7 +155,9 @@ function App() {
   return (
     <div>
       <div className="panel">
-        <Panel onUpdateValue={updateValue} onUpdateStock={updateStock} />
+        {stockList && (
+          <Panel stockList={stockList} onUpdateValue={updateValue} onUpdateStock={updateStock} />
+        )}
       </div>
       <div className="timeselector">
         {trade && (

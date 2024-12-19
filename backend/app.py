@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
+import os
 from indicator import *
 from process import *
 from evaluation import *
@@ -14,6 +15,16 @@ file_name = "600893.SH.csv"
 
 data_df = pd.read_csv(file_path + file_name)
 app.secret_key = 'secret_key'
+
+@app.route('/get_stock_list')
+def get_stock_list():
+    csv_files = []
+    # 遍历data文件夹中的文件
+    for file_name in os.listdir(file_path):
+        # 检查文件是否以.csv结尾
+        if file_name.endswith('.csv'):
+            csv_files.append(file_name[:9])
+    return jsonify(csv_files)
 
 @app.route('/get_stock_data')
 def get_stock_data():
