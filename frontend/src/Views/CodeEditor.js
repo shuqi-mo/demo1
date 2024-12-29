@@ -13,7 +13,7 @@ function CodeEditor({ code, onCodeChange}) {
     <div>
       <MonacoEditor
         width="500"
-        height="800"
+        height="500"
         language="javascript"
         value={code}
         onChange={(v)=>setTempcode(v)}

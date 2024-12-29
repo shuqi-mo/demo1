@@ -9,6 +9,41 @@ import { Indicator, Evaluation } from "./utils/ClassDefinitions";
 import IndicatorsTable from "./Views/IndicatorsTable";
 import { Button } from "antd";
 import StocksTable from "./Views/StocksTable";
+import TreeGraph from "./Views/TreeGraph";
+import LineChart from "./Views/LineChart";
+
+const graphData = [
+  ["long", "up"],
+  ["long", "price"],
+  ["short", "price"],
+  ["short", "down"],
+  ["up", "mid"],
+  ["up", "band"],
+  ["up", "multiplier"],
+  ["down", "mid"],
+  ["down", "band"],
+  ["down", "multiplier"],
+];
+
+function buildGraph(data) {
+  const nodes = {}; // 用来存储所有唯一的节点
+  const links = []; // 存储所有的边
+
+  data.forEach(([parent, child]) => {
+    // 确保每个节点是对象，并包含唯一的标识符
+    if (!nodes[parent]) {
+      nodes[parent] = { id: parent, name: parent }; // 用 id 作为唯一标识
+    }
+    if (!nodes[child]) {
+      nodes[child] = { id: child, name: child }; // 用 id 作为唯一标识
+    }
+
+    // 创建边
+    links.push({ source: nodes[parent], target: nodes[child] });
+  });
+
+  return { nodes: Object.values(nodes), links };
+}
 
 function App() {
   const API_URL = "http://localhost:5000";
@@ -20,6 +55,7 @@ function App() {
   const [selectStock, setSelectStock] = useState("600893.SH");
   const [stockList, setStockList] = useState(["600893.SH"]);
   const [stockPerformance, setStockPerformance] = useState([]);
+  const [lines, setLines] = useState(null);
 
   // 创建策略实例并计算
   const indicators = JSON.parse(code).indicators.map((strategyData) => {
@@ -67,6 +103,15 @@ function App() {
       .then((response) => {
         // setData(response.data);
         setStockList(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    axios
+      .get(`${API_URL}/get_data`)
+      .then((response) => {
+        // console.log(response.data);
+        setLines(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -122,14 +167,14 @@ function App() {
         name: indicator[0],
         success: indicator[1],
         totalprofit: indicator[2],
-        singlereturn: indicator[3]
+        singlereturn: indicator[3],
       }));
       setBacktest(newBacktest);
     } catch (error) {
       console.error("Error:", error);
     }
   }
-  
+
   useEffect(() => {
     processStrategies();
   }, [selectStock, code]);
@@ -170,6 +215,13 @@ function App() {
     }
   };
 
+  const graph = buildGraph(graphData);
+  // console.log(graph);
+
+  const handleNodeClick = (nodeName) => {
+    console.log(nodeName);
+  };
+
   return (
     <div>
       <div className="panel">
@@ -185,6 +237,12 @@ function App() {
             <Candle data={data} trade={trade} />
           </div>
         )}
+        <div>
+          <TreeGraph data={graph} onNodeClick={handleNodeClick} />
+        </div>
+        {lines && (<div>
+          <LineChart lines={lines}/>
+        </div>)}
         {backtest && (
           <div style={{ padding: "20px" }}>
             <IndicatorsTable indicators={backtest} />

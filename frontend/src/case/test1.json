@@ -25,25 +25,6 @@
       "down": "mid - multiplier * band",
       "long": "cross(price, down)",
       "short": "cross(up, price)"
-    },
-    {
-      "name": "BarUpDn",
-      "long": "(close > open) & (open > close[1])",
-      "short": "(open > close) & (close[1] > open)"
-    },
-    {
-      "name": "InSide Bar",
-      "long": "(close > open) & (high < high[1]) & (low > low[1])",
-      "short": "(close < open) & (high < high[1]) & (low > low[1])"
-    },
-    {
-      "name": "new",
-      "MA1": "EMA(close, 5)",
-      "MA2": "EMA(close, 10)",
-      "MA3": "EMA(close, 20)",
-      "MA4": "EMA(close, 30)",
-      "long": "(MA1 > MA2 > MA3 > MA4) & (open < close) & (low < MA1)",
-      "short": "(MA1 < MA2 < MA3 < MA4) & (open > close) & (high > MA4)"
     }
   ],
   "evaluation": {

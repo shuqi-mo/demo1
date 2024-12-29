@@ -3,6 +3,8 @@ from flask_cors import CORS
 import pandas as pd
 import numpy as np
 import os
+import time
+
 from indicator import *
 from process import *
 from evaluation import *
@@ -14,10 +16,10 @@ file_path = "static/data/"
 file_name = "600893.SH.csv"
 csv_files = []
 # 遍历data文件夹中的文件
-for file_name in os.listdir(file_path):
+for file in os.listdir(file_path):
     # 检查文件是否以.csv结尾
-    if file_name.endswith('.csv'):
-        csv_files.append(file_name[:9])
+    if file.endswith('.csv'):
+        csv_files.append(file[:9])
 
 data_df = pd.read_csv(file_path + file_name)
 app.secret_key = 'secret_key'
@@ -70,6 +72,7 @@ def process_single_stock():
 @app.route('/process_stocks', methods=['POST'])
 def process_stocks():
     data = request.get_json()
+    start_time = time.time()  # 记录开始时间
     res = []
     for item in csv_files:
         stock = pd.read_csv(file_path + item + ".csv")
@@ -88,7 +91,21 @@ def process_stocks():
             totalProfit.append(res_singlestock[1])
             totalReturn.append(res_singlestock[2])
         res.append([item, totalSuccess, totalProfit, totalReturn])
+        print(item)
+    end_time = time.time()  # 记录结束时间
+    elapsed_time = end_time - start_time  # 计算运行时间
+    print(f"程序运行时间：{elapsed_time} 秒")
     return jsonify(res)
+
+@app.route('/get_data')
+def get_data():
+    price = data_df["close"]
+    mid = EMA(price, 20)
+    band = movingstd(mid, 20)
+    multiplier = 2
+    up = mid + multiplier * band
+    down = mid - multiplier * band
+    return jsonify([list(price)[20:],list(up)[20:],list(down)[20:]])
 
 if __name__ == '__main__':
     app.run()
